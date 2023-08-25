@@ -1,0 +1,37 @@
+{
+	"tasks": {
+		"start": "deno run -A --no-check --unstable --watch=routes/,components/,setups/,tailwind.css ./dev.js",
+		"create-app": "fly apps create open-match",
+		"set-secrets": "fly secrets import .env",
+		"authenticate": "fly auth login",
+		"scale": "fly scale vm shared-cpu-2x && fly scale memory 2048",
+		"deploy": "fly deploy",
+		"setup": "deno task create-apps ; deno task scale && deno task set-secrets",
+		"build": "deno run -A dev.js build",
+		"preview": "deno run -A main.js"
+	},
+	"lint": {
+		"rules": {
+			"exclude": [
+				"require-await"
+			],
+			"tags": [
+				"fresh",
+				"recommended"
+			]
+		},
+		"exclude": [
+			"_fresh"
+		]
+	},
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	},
+	"importMap": "./import-map.json",
+	"fmt": {
+		"exclude": [
+			"_fresh"
+		]
+	}
+}
