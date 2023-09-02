@@ -63,11 +63,11 @@ RUN apt-get -qq update \
 	&& apt-get -qq clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN useradd --uid 1993 --user-group deno \
-	&& mkdir /root/deno-dir/ \
-	&& chown deno:deno /root/deno-dir/
+# RUN useradd --uid 1993 --user-group deno \
+# 	&& mkdir /root/.cache/ \
+# 	&& chown deno:deno /root/.cache/
 
-ENV DENO_DIR /root/deno-dir/
+# ENV DENO_DIR /root/deno-dir/
 
 WORKDIR /root
 COPY . .
