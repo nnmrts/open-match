@@ -4,7 +4,7 @@ kill_signal = "SIGINT"
 kill_timeout = "5s"
 
 [experimental]
-cmd = ["run", "-A", "--unstable", "./main.js"]
+cmd = ["run", "-A", "--no-check", "--unstable", "./main.js"]
 auto_rollback = true
 
 [env]

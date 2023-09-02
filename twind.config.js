@@ -1,18 +1,19 @@
-import { defineConfig } from "https://esm.sh/@twind/core@1.1.3";
-import presetTailwind from "https://esm.sh/@twind/preset-tailwind";
-import presetAutoprefix from "https://esm.sh/@twind/preset-autoprefix";
+import { defineConfig } from "@twind/core";
+import presetTailwind from "@twind/preset-tailwind";
+import presetAutoprefix from "@twind/preset-autoprefix";
+
+import tailwindConfig from "./tailwind.config.js";
+
+const {
+	content,
+	theme
+} = tailwindConfig;
 
 export default {
+	content,
 	...defineConfig({
 		presets: [presetTailwind(), presetAutoprefix()],
-		theme: {
-			extend: {
-				fontFamily: {
-					sans: ["\"Inter\"", "sans-serif"],
-					mono: ["\"Roboto Mono\"", "monospace"]
-				}
-			}
-		}
+		theme
 	}),
 	selfURL: import.meta.url
 };

@@ -7,8 +7,8 @@
 		"scale": "fly scale vm shared-cpu-2x && fly scale memory 2048",
 		"deploy": "fly deploy",
 		"setup": "deno task create-apps ; deno task scale && deno task set-secrets",
-		"build": "deno run -A dev.js build",
-		"preview": "deno run -A main.js"
+		"build": "deno run -A --no-check --unstable dev.js build",
+		"preview": "deno run -A --no-check --unstable main.js"
 	},
 	"lint": {
 		"rules": {

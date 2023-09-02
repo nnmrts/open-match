@@ -1,6 +1,11 @@
-import clsx from "clsx";
+import { useEffect, useState } from "preact/hooks";
 
-import PieceDisplay from "@/islands/piece-display.jsx";
+import ColumnsDisplay from "./columns-display.jsx";
+
+import {
+	useBoard, useEventSource, useEventSourceListener
+} from "@/hooks.js";
+import { eventSource as eventSourceSignal } from "@/signals.js";
 import Board from "@/logic/board.js";
 
 /**
@@ -8,100 +13,150 @@ import Board from "@/logic/board.js";
  * @param board
  * @param board.id
  * @param boardSnapshot
+ * @param board.user
  */
-const BoardDisplay = ({ id, ...boardSnapshot }) => {
-	const board = Board.from(boardSnapshot);
+// eslint-disable-next-line max-lines-per-function
+const BoardDisplay = ({
+	id,
+	user,
+	...boardSnapshot
+}) => {
+	const {
+		board,
+		loading: boardLoading,
+		mutate: mutateBoard
+	} = useBoard(boardSnapshot);
+
+	const [eventSource] = useEventSource(`/api/rooms/${id}/events`, false);
+
+	const [boardStates, setBoardStates] = useState([]);
+	const [boardStatesLeft, setBoardStatesLeft] = useState([]);
+	const [noAvailableMovesMessageShown, setNoAvailableMovesMessageShown] = useState(false);
+
+	useEffect(() => {
+		if (eventSource) {
+			eventSourceSignal.value = eventSource;
+		}
+	}, [eventSource]);
+
+	const debug = false;
+
+	useEventSourceListener(
+		eventSourceSignal.value,
+		["message"],
+		async ({ data }) => {
+			const {
+				type,
+				payload
+			} = JSON.parse(data);
+
+			switch (type) {
+				case "move":
+				case "shuffle": {
+					const {
+						boardStates: payloadBoardStates
+					} = payload;
+
+					setBoardStates(payloadBoardStates);
+					break;
+				}
+
+				// no default
+			}
+		}
+	);
+
+	const updateBoard = async (boardState, callback = () => {}) => {
+		await mutateBoard(Board.from({ ...boardState }));
+
+		callback();
+
+		setBoardStatesLeft((currentBoardStatesLeft) => currentBoardStatesLeft.slice(1));
+	};
+
+	useEffect(() => {
+		if (boardStates) {
+			setBoardStatesLeft(boardStates);
+		}
+	}, [boardStates]);
+
+	useEffect(() => {
+		if (boardStates && boardStates.length > 0 && boardStates.length === boardStatesLeft.length) {
+			updateBoard(boardStates[0]);
+		}
+		else if (boardStatesLeft && boardStatesLeft.length === 0 && noAvailableMovesMessageShown) {
+			setNoAvailableMovesMessageShown(false);
+		}
+	}, [boardStatesLeft]);
+
+	const handleNoAvailableMoves = async () => {
+		if (noAvailableMovesMessageShown) {
+			await fetch(
+				`/api/rooms/${id}/shuffle`,
+				{
+					method: "POST",
+					headers: new Headers({
+						"content-type": "application/json"
+					}),
+					body: JSON.stringify({
+						reason: "noAvailableMoves"
+					})
+				}
+			);
+		}
+	};
+
+	useEffect(() => {
+		handleNoAvailableMoves();
+	}, [noAvailableMovesMessageShown]);
+
+	useEffect(() => {
+		if (board && board.availableMoves.size === 0 && boardStatesLeft.length === 0) {
+			setNoAvailableMovesMessageShown(true);
+		}
+	}, [board, boardStatesLeft]);
+
+	const handleAnimationEnd = async (callback) => {
+		// await new Promise((resolve) => {
+		// 	setTimeout(resolve, 1000);
+		// });
+
+		if (boardStatesLeft.length > 0) {
+			updateBoard(boardStatesLeft[0], callback);
+		}
+	};
+
+	if (boardLoading) {
+		return (
+			<div className="flex items-center justify-center p-2 h-[min(100%,calc(100vw-var(--main-padding)))]">
+				Loading...
+			</div>
+		);
+	}
 
 	const {
-		columns,
-		width,
-		height
+		columns
 	} = board;
 
-	const broadcastChannel = new BroadcastChannel(`board${id}`);
-
-	const debug = true;
-
 	return (
-		<ul
-			className="grid h-full grid-flow-col gap-2 p-2"
-			style={{
-				gridTemplateColumns: `repeat(${width}, 1fr)`,
-				gridTemplateRows: `repeat(${height}, 1fr)`,
-				aspectRatio: `${width}/${height}`
-			}}
-		>
+		<>
 			{
-				columns
-					.map((column, columnIndex) => (
-						column
-							.map((tile, tileIndex) => {
-								const {
-									piece, parity, availableMoves
-								} = tile;
-
-								return (
-									<li
-										key={`${columnIndex}-${tileIndex}`}
-										className={clsx(
-											"h-full aspect-square p-4 relative",
-											{
-												"backdrop-brightness-75": parity === 0,
-												"backdrop-brightness-50": parity === 1,
-												"border border-red-600": debug && tile.inMatch()
-											}
-										)}
-									>
-										{
-											availableMoves.size > 0 && (
-												<div
-													className="absolute top-0 left-0 flex flex-col items-center justify-between w-full h-full"
-												>
-													<div
-														className={clsx(
-															"bg-white h-1/4 w-1",
-															{
-																"opacity-0": debug && !availableMoves.has("top")
-															}
-														)}
-													/>
-													<div className="flex justify-between w-full">
-														<div
-															className={clsx(
-																"bg-white h-1 w-1/4",
-																{
-																	"opacity-0": debug && !availableMoves.has("left")
-																}
-															)}
-														/>
-														<div
-															className={clsx(
-																"bg-white h-1 w-1/4",
-																{
-																	"opacity-0": debug && !availableMoves.has("right")
-																}
-															)}
-														/>
-													</div>
-													<div
-														className={clsx(
-															"bg-white h-1/4 w-1",
-															{
-																"opacity-0": debug && !availableMoves.has("bottom")
-															}
-														)}
-													/>
-												</div>
-
-											)
-										}
-										<PieceDisplay {...piece} />
-									</li>
-								);
-							})
-					))
+				(noAvailableMovesMessageShown) && (
+					<div className="absolute z-50 flex flex-col items-center justify-center w-full h-full gap-2 bg-black bg-opacity-75 backdrop-blur-sm">
+						<span className="text-3xl font-bold">No available Moves</span>
+						<span className="text-3xl font-bold">Shuffling...</span>
+					</div>
+				)
 			}
-		</ul>
+			<ColumnsDisplay
+				{...{
+					columns,
+					user,
+					handleAnimationEnd,
+					boardStatesLeft
+				}}
+			/>
+		</>
 	);
 };
 

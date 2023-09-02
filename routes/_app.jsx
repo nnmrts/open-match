@@ -12,13 +12,16 @@ import LoginForm from "@/islands/login-form.jsx";
  * @param props.Component
  * @param props.state
  * @param props.state.isAllowed
+ * @param props.state.user
  */
-const App = ({ Component, state: { isAllowed } = {} }) => (
+const App = ({
+	Component, state: { isAllowed } = {}
+}) => (
 	<html>
 		<head className="dark" lang="en">
 			<title>open-match</title>
 			<FontsStyle />
-			<link href={asset("/style/tailwind.css")} rel="stylesheet" />
+			<link href={asset("/style/base.css")} rel="stylesheet" />
 			<link rel="icon" href="/favicons/icon.svg" type="image/svg+xml" />
 			<link rel="icon" href="/favicons/favicon.ico" sizes="any" />
 			<link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png" />

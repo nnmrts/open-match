@@ -14,7 +14,7 @@ const Header = () => {
 			name: "index",
 			title: "Home",
 			custom: () => (
-				<h1 className="text-4xl font-bold sm:text-5xl">open-match</h1>
+				<h1 className="text-4xl font-bold md:text-5xl">open-match</h1>
 			)
 		}
 	];
@@ -22,7 +22,7 @@ const Header = () => {
 	return (
 		<header className="z-10 h-24 text-white bg-neutral-900">
 			<nav aria-label="Main Navigation" className="w-full h-full">
-				<ul className="grid w-full h-full grid-cols-headerMobile sm:grid-cols-header">
+				<ul className="grid w-full h-full grid-cols-headerMobile md:grid-cols-header">
 					{
 						navigationItems
 							.map((
@@ -39,7 +39,7 @@ const Header = () => {
 									className={clsx(
 										"min-h-full h-full items-center justify-center first:justify-start",
 										{
-											"hidden sm:flex": index !== 0,
+											"hidden md:flex": index !== 0,
 											flex: index === 0
 										}
 									)}

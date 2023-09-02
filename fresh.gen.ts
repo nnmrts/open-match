@@ -8,14 +8,21 @@ import * as $2 from "./routes/_middleware.jsx";
 import * as $3 from "./routes/api/login.js";
 import * as $4 from "./routes/api/rooms.js";
 import * as $5 from "./routes/api/rooms/[id].js";
-import * as $6 from "./routes/index.jsx";
-import * as $7 from "./routes/new.jsx";
+import * as $6 from "./routes/api/rooms/[id]/events.js";
+import * as $7 from "./routes/api/rooms/[id]/move-attempt.js";
+import * as $8 from "./routes/api/rooms/[id]/move.js";
+import * as $9 from "./routes/api/rooms/[id]/shuffle.js";
+import * as $10 from "./routes/index.jsx";
+import * as $11 from "./routes/new.jsx";
 import * as $$0 from "./islands/add-room.jsx";
 import * as $$1 from "./islands/board-display.jsx";
-import * as $$2 from "./islands/login-form.jsx";
-import * as $$3 from "./islands/mobile-menu.jsx";
-import * as $$4 from "./islands/piece-display.jsx";
-import * as $$5 from "./islands/rooms-list.jsx";
+import * as $$2 from "./islands/column-display.jsx";
+import * as $$3 from "./islands/columns-display.jsx";
+import * as $$4 from "./islands/login-form.jsx";
+import * as $$5 from "./islands/mobile-menu.jsx";
+import * as $$6 from "./islands/piece-display.jsx";
+import * as $$7 from "./islands/rooms-list.jsx";
+import * as $$8 from "./islands/tile-display.jsx";
 
 const manifest = {
   routes: {
@@ -25,16 +32,23 @@ const manifest = {
     "./routes/api/login.js": $3,
     "./routes/api/rooms.js": $4,
     "./routes/api/rooms/[id].js": $5,
-    "./routes/index.jsx": $6,
-    "./routes/new.jsx": $7,
+    "./routes/api/rooms/[id]/events.js": $6,
+    "./routes/api/rooms/[id]/move-attempt.js": $7,
+    "./routes/api/rooms/[id]/move.js": $8,
+    "./routes/api/rooms/[id]/shuffle.js": $9,
+    "./routes/index.jsx": $10,
+    "./routes/new.jsx": $11,
   },
   islands: {
     "./islands/add-room.jsx": $$0,
     "./islands/board-display.jsx": $$1,
-    "./islands/login-form.jsx": $$2,
-    "./islands/mobile-menu.jsx": $$3,
-    "./islands/piece-display.jsx": $$4,
-    "./islands/rooms-list.jsx": $$5,
+    "./islands/column-display.jsx": $$2,
+    "./islands/columns-display.jsx": $$3,
+    "./islands/login-form.jsx": $$4,
+    "./islands/mobile-menu.jsx": $$5,
+    "./islands/piece-display.jsx": $$6,
+    "./islands/rooms-list.jsx": $$7,
+    "./islands/tile-display.jsx": $$8,
   },
   baseUrl: import.meta.url,
 };

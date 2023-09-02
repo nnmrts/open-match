@@ -188,5 +188,4 @@ $RECYCLE.BIN/
 /target
 /print
 /data
-
-*.chat.history.md
+/_fresh

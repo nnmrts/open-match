@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-ENV DENO_VERSION=1.36.1
+ENV DENO_VERSION=1.36.4
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update \
@@ -70,12 +70,12 @@ RUN useradd --uid 1993 --user-group deno \
 ENV DENO_DIR /root/deno-dir/
 
 WORKDIR /root
-COPY . . 
+COPY . .
 
-RUN deno cache main.js --import-map=import-map.json
+RUN deno task build
 
 EXPOSE 8000
 
 ENTRYPOINT ["deno"]
 
-CMD ["run", "-A", "--unstable", "./main.js"]
+CMD ["task", "preview"]

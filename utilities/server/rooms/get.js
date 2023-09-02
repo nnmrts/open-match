@@ -1,4 +1,4 @@
-import { kv } from "@/utilities.js";
+import kv from "@/utilities/server/kv.js";
 
 /**
  *

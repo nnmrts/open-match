@@ -1,4 +1,4 @@
-import { kv } from "@/utilities.js";
+import { kv } from "@/utilities/server.js";
 import Board from "@/logic/board.js";
 
 const handler = {
@@ -21,9 +21,23 @@ const handler = {
 		);
 	},
 	POST: async (request, context) => {
-		const { name } = await request.json();
+		const {
+			name,
+			width,
+			height,
+			numberOfDifferentPieces
+		} = await request.json();
 
 		const id = crypto.randomUUID();
+
+		const board = new Board({
+			id,
+			width,
+			height,
+			numberOfDifferentPieces
+		});
+
+		await board.update();
 
 		await kv.set(
 			["rooms", id],
@@ -31,7 +45,7 @@ const handler = {
 				name,
 				id,
 				players: [],
-				board: (new Board({ id })).snapshot()
+				board: board.snapshot()
 			}
 		);
 

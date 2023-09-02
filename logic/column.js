@@ -31,11 +31,6 @@ const Column = class extends Array {
 			boardHeight
 		} = this;
 
-		// if (!this.pieces) {
-		// 	console.log("DEBUG - Column.refill");
-		// 	console.log(this);
-		// }
-
 		const notEmptyTiles = this.filter(({ piece }) => piece !== null);
 
 		const numberOfTilesToAdd = this.length - notEmptyTiles.length;
@@ -54,7 +49,13 @@ const Column = class extends Array {
 			}));
 
 		return Column
-			.from([...newTiles, ...notEmptyTiles])
+			.from(
+				[...newTiles, ...notEmptyTiles]
+					.map((tile, tileIndex) => Tile.from({
+						...tile.snapshot(),
+						tileIndex
+					}))
+			)
 			.decorate({
 				columnIndex,
 				pieces,
@@ -64,6 +65,20 @@ const Column = class extends Array {
 	};
 
 	snapshot = () => structuredClone([...this.map((tile) => tile.snapshot())]);
+
+	/**
+	 *
+	 */
+	get availableMoves() {
+		return new Set(
+			this
+				.map((tile, tileIndex) => (
+					[...tile.availableMoves]
+						.map((direction) => [tileIndex, direction])
+				))
+				.flat()
+		);
+	}
 
 	static from = (snapshot) => {
 		const tiles = snapshot.map((tileSnapshot) => Tile.from(tileSnapshot));

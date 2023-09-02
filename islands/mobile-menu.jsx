@@ -1,5 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import { startCase } from "lodash-es";
+import { TbX, TbMenu2 } from "react-icons/tb";
 
 /**
  *
@@ -7,7 +8,7 @@ import { startCase } from "lodash-es";
  * @param props.items
  */
 const MobileMenu = ({ items }) => (
-	<li className="relative flex items-center justify-center h-full min-h-full sm:hidden">
+	<li className="relative flex items-center justify-center h-full min-h-full md:hidden">
 		<Menu>
 			{
 				({ open }) => (
@@ -24,7 +25,7 @@ const MobileMenu = ({ items }) => (
 									leaveTo="opacity-0"
 									className="absolute"
 								>
-									{/* <TbX size={24} /> */}
+									<TbX size={24} />
 								</Transition>
 								<Transition
 									show={!open}
@@ -36,7 +37,7 @@ const MobileMenu = ({ items }) => (
 									leaveTo="opacity-0"
 									className="absolute"
 								>
-									{/* <TbMenu2 size={24} /> */}
+									<TbMenu2 size={24} />
 								</Transition>
 							</>
 						</Menu.Button>

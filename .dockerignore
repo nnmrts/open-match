@@ -185,3 +185,4 @@ $RECYCLE.BIN/
 **/.git
 fly.toml
 deno.lock
+/_fresh

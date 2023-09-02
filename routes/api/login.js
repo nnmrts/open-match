@@ -1,7 +1,7 @@
 import { setCookie } from "std/http";
 import { Temporal } from "@js-temporal/polyfill";
 
-import { kv } from "@/utilities.js";
+import { kv } from "@/utilities/server.js";
 
 const {
 	Duration
@@ -56,6 +56,7 @@ const handler = {
 				await kv.set(
 					["users", username],
 					{
+						name: username,
 						passwordHash,
 						sessionId
 					}

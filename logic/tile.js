@@ -1,5 +1,7 @@
 import Piece from "./piece.js";
 
+import { positionDirections } from "@/utilities/logic.js";
+
 /**
  *
  */
@@ -101,14 +103,15 @@ const Tile = class {
 			vicinity
 		} = this;
 
-		return new Map(
+		return new Set(
 			[
 				["left", vicinity.get("left")?.piece],
 				["right", vicinity.get("right")?.piece],
 				["top", vicinity.get("top")?.piece],
 				["bottom", vicinity.get("bottom")?.piece]
 			]
-				.filter(([direction, piece]) => piece)
+				.filter(([position, piece]) => piece)
+				.map(([position, piece]) => positionDirections.get(position))
 		);
 	}
 
@@ -116,12 +119,12 @@ const Tile = class {
 	 *
 	 */
 	get availableMoves() {
-		return new Map(
+		return new Set(
 			[...this.possibleMoves]
 				// eslint-disable-next-line max-statements
-				.filter(([direction, piece]) => {
+				.filter((direction) => {
 					switch (direction) {
-						case "top": {
+						case "up": {
 							const topTile = this.vicinity.get("top");
 
 							const hypotheticalTopTile = Tile.from(this.snapshot());
@@ -179,7 +182,7 @@ const Tile = class {
 							);
 						}
 
-						case "bottom": {
+						case "down": {
 							const bottomTile = this.vicinity.get("bottom");
 
 							const hypotheticalBottomTile = Tile.from(this.snapshot());

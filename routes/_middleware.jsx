@@ -1,6 +1,6 @@
 import { getCookies } from "std/http";
 
-import { kv } from "@/utilities.js";
+import { kv } from "@/utilities/server.js";
 
 /**
  *
@@ -14,9 +14,17 @@ const handler = async ({ headers }, context) => {
 	let isAllowed = false;
 
 	if (cookies.auth) {
-		for await (const { value: { sessionId } } of kv.list({ prefix: ["users"] })) {
+		for await (const { value: user } of kv.list({ prefix: ["users"] })) {
+			const { sessionId, name } = user;
+
 			if (sessionId === cookies.auth) {
 				isAllowed = true;
+
+				context.state.user = {
+					sessionId,
+					name
+				};
+
 				break;
 			}
 		}
