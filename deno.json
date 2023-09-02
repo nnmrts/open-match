@@ -26,7 +26,9 @@
 	},
 	"compilerOptions": {
 		"jsx": "react-jsx",
-		"jsxImportSource": "preact"
+		"jsxImportSource": "preact",
+		"checkJs": false,
+		"allowJs": true
 	},
 	"importMap": "./import-map.json",
 	"fmt": {
