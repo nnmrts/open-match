@@ -396,8 +396,6 @@ const Board = class {
 		const newPiecesArray = await findPermutation(
 			piecesArray,
 			async (permutation) => {
-				console.log(permutation);
-
 				const newColumns = columns.map((column, columnIndex) => (
 					Column.from(
 						[...permutation]
@@ -435,9 +433,6 @@ const Board = class {
 			},
 			limit
 		);
-
-		console.log("deadlockPossible");
-		console.log(deadlockPossible);
 
 		if (newPiecesArray) {
 			const newColumns = columns.map((column, columnIndex) => (

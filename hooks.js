@@ -6,3 +6,4 @@ export { default as useEventSource } from "./hooks/use-event-source.js";
 export { default as useEventSourceListener } from "./hooks/use-event-source-listener.js";
 export { default as useSsr } from "./hooks/use-ssr.js";
 export { default as useBoard } from "./hooks/use-board.js";
+export { default as usePiece } from "./hooks/use-piece.js";

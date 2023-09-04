@@ -16,6 +16,8 @@ import PieceDisplay from "@/islands/piece-display.jsx";
  * @param props.availableMoves
  * @param props.user
  * @param props.inMatch
+ * @param props.animationState
+ * @param props.refillingAnimationState
  */
 const TileDisplay = ({
 	columnIndex,
@@ -29,9 +31,11 @@ const TileDisplay = ({
 	availableMoves,
 	user,
 	inMatch,
+	animationState,
+	refillingAnimationState,
 	...tile
 }) => {
-	const debug = true;
+	const debug = false;
 
 	return (
 		<li
@@ -94,11 +98,12 @@ const TileDisplay = ({
 			<PieceDisplay
 				{...{
 					...piece,
+					animationState,
 					availableMoves,
 					columnIndex,
 					inMatch,
 					nextTile,
-					nextTransition,
+					refillingAnimationState,
 					tile,
 					tileIndex,
 					transition,

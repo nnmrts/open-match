@@ -61,7 +61,7 @@ const AddRoom = () => {
 			<div
 				className="flex items-center gap-2"
 			>
-				<label htmlFor="name" className="w-24">Name</label>
+				<label htmlFor="name" className="w-64">Name</label>
 				<input
 					id="name"
 					name="name"
@@ -77,7 +77,7 @@ const AddRoom = () => {
 			<div
 				className="flex items-center gap-2"
 			>
-				<label htmlFor="width" className="w-24">Width</label>
+				<label htmlFor="width" className="w-64">Width</label>
 				<input
 					id="width"
 					name="width"
@@ -92,7 +92,7 @@ const AddRoom = () => {
 			<div
 				className="flex items-center gap-2"
 			>
-				<label htmlFor="height" className="w-24">Height</label>
+				<label htmlFor="height" className="w-64">Height</label>
 				<input
 					id="height"
 					name="height"
@@ -107,7 +107,7 @@ const AddRoom = () => {
 			<div
 				className="flex items-center gap-2"
 			>
-				<label htmlFor="numberOfDifferentPieces" className="w-24">Number of different pieces</label>
+				<label htmlFor="numberOfDifferentPieces" className="w-64">Number of different pieces</label>
 				<input
 					id="numberOfDifferentPieces"
 					name="numberOfDifferentPieces"

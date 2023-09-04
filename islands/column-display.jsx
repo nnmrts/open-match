@@ -1,9 +1,29 @@
-import { useEffect, useState } from "preact/hooks";
+import {
+	useEffect, useState, useReducer
+} from "preact/hooks";
 
 import TileDisplay from "./tile-display.jsx";
 
 const minDuration = 250;
 const maxDuration = 500;
+
+const reducer = (state, action) => {
+	const {
+		type,
+		payload
+	} = action;
+
+	switch (type) {
+		case "set":
+			return new Map([...state, ...payload]);
+		case "delete":
+			return new Map([...state].filter(([key]) => key !== payload));
+		case "clear":
+			return new Map([...state].map(([key]) => [key, { type: "none" }]));
+		default:
+			return state;
+	}
+};
 
 /**
  *
@@ -14,6 +34,7 @@ const maxDuration = 500;
  * @param props.handleColumnAnimationEnd
  * @param props.gridMeasurements
  * @param props.nextColumn
+ * @param props.handled
  */
 // eslint-disable-next-line max-lines-per-function
 const ColumnDisplay = ({
@@ -21,37 +42,87 @@ const ColumnDisplay = ({
 	columnIndex,
 	user,
 	handleColumnAnimationEnd,
+	handled,
 	gridMeasurements,
 	nextColumn
 }) => {
 	const [currentColumn, setCurrentColumn] = useState(null);
-	const [transitions, setTransitions] = useState(new Map());
+	const [currentNextColumn, setCurrentNextColumn] = useState(null);
+	const [animationStates, dispatchAnimationStates] = useReducer(
+		reducer,
+		new Map([
+			...column.map((tile) => [
+				[
+					tile.tileIndex,
+					{
+						type: "none"
+					}
+				],
+				[
+					`refilling-${tile.tileIndex}`,
+					{
+						type: "none"
+					}
+				]
+			]).flat()
+		])
+	);
 
-	const animateTiles = async () => {
+	const animateMatchedTiles = async (matchedTileIndices) => {
+		for (const tileIndex of matchedTileIndices) {
+			dispatchAnimationStates({
+				type: "set",
+				payload: [
+					[
+						tileIndex,
+						{
+							type: "matching",
+							durationMilliseconds: minDuration
+						}
+					]
+				]
+			});
+		}
+
+		await new Promise((resolve) => {
+			setTimeout(resolve, minDuration);
+		});
+
+		for (const tileIndex of matchedTileIndices) {
+			dispatchAnimationStates({
+				type: "set",
+				payload: [
+					[
+						tileIndex,
+						{
+							type: "matched",
+							durationMilliseconds: maxDuration
+						}
+					]
+				]
+			});
+		}
+
+		await new Promise((resolve) => {
+			setTimeout(resolve, maxDuration);
+		});
+	};
+
+	const animateFallingTiles = async (matchedTileIndices) => {
 		const {
-			height: gridHeight,
-			gapPercentage,
-			tileHeight
+			height: {
+				value: gridHeight,
+				unit: gridHeightUnit
+			},
+			gap: {
+				value: gap,
+				unit: gapUnit
+			},
+			tileHeight: {
+				value: tileHeight,
+				unit: tileHeightUnit
+			}
 		} = gridMeasurements;
-
-		setCurrentColumn(column);
-
-		const newTransitions = new Map();
-
-		const matchedTileIndices = column
-			.filter((tile) => tile.inMatch())
-			.map((tile) => tile.tileIndex);
-
-		// for (const tileIndex of matchedTileIndices) {
-		// 	newTransitions.set(
-		// 		tileIndex,
-		// 		{
-		// 			transform: "scale(0)",
-		// 			transitionDuration: `${maxDuration}ms`,
-		// 			transitionDelay: `${minDuration}ms`
-		// 		}
-		// 	);
-		// }
 
 		const fallingTiles = column
 			.filter(({ tileIndex }) => !matchedTileIndices.includes(tileIndex))
@@ -71,6 +142,8 @@ const ColumnDisplay = ({
 			})
 			.filter(([, numberOfMatchedTilesBelow]) => numberOfMatchedTilesBelow > 0);
 
+		let totalDuration = 0;
+
 		for (const [tileIndex, numberOfMatchedTilesBelow] of fallingTiles) {
 			const durationMilliseconds = (
 				(tileIndex * (maxDuration - minDuration)) /
@@ -78,22 +151,31 @@ const ColumnDisplay = ({
 			) +
 			minDuration;
 
+			const gapPixels = gapUnit === "pixel" ? gap : gridHeight * (gap / 100);
+
 			const offsetInPixels = (
 				(
-					(gridHeight * (gapPercentage / 100)) +
+					gapPixels +
 					tileHeight
 				) *
 				numberOfMatchedTilesBelow
 			);
 
-			newTransitions.set(
-				tileIndex,
-				{
-					transform: `translateY(${offsetInPixels}px)`,
-					transitionDuration: `${maxDuration}ms`,
-					transitionDelay: `${maxDuration}ms`
-				}
-			);
+			dispatchAnimationStates({
+				type: "set",
+				payload: [
+					[
+						tileIndex,
+						{
+							type: "falling",
+							durationMilliseconds,
+							offsetInPixels
+						}
+					]
+				]
+			});
+
+			totalDuration = Math.max(totalDuration, durationMilliseconds);
 		}
 
 		const emptyTileIndices = Array(matchedTileIndices.length)
@@ -107,81 +189,94 @@ const ColumnDisplay = ({
 			) +
 			minDuration;
 
+			const gapPixels = gapUnit === "pixel" ? gap : gridHeight * (gap / 100);
+
 			const offsetInPixels = (
 				(
-					(gridHeight * (gapPercentage / 100)) +
+					gapPixels +
 					tileHeight
 				) *
 				emptyTileIndices.length
 			);
 
-			newTransitions.set(
-				`next-${emptyTileIndex}`,
-				{
-					transform: "translateY(0%)",
-					transitionDuration: `${durationMilliseconds}ms`,
-					transitionDelay: `${maxDuration}ms`,
-					opacity: 1
-				}
-			);
+			dispatchAnimationStates({
+				type: "set",
+				payload: [
+					[
+						`refilling-${emptyTileIndex}`,
+						{
+							type: "falling",
+							durationMilliseconds
+						}
+					]
+				]
+			});
+
+			totalDuration = Math.max(totalDuration, durationMilliseconds);
 		}
 
 		await new Promise((resolve) => {
-			setTimeout(resolve, maxDuration);
+			setTimeout(resolve, totalDuration);
 		});
-
-		setTransitions(newTransitions);
 	};
 
-	const updateColumn = async () => {
-		const firstMatchedTileIndex = column.findIndex((tile) => tile.inMatch());
+	const animateTiles = async () => {
+		const {
+			height: {
+				value: gridHeight,
+				unit: gridHeightUnit
+			},
+			gap: {
+				value: gap,
+				unit: gapUnit
+			},
+			tileHeight: {
+				value: tileHeight,
+				unit: tileHeightUnit
+			}
+		} = gridMeasurements;
 
-		if (firstMatchedTileIndex === -1) {
-			setCurrentColumn(column);
+		const matchedTileIndices = column
+			.filter((tile) => tile.inMatch())
+			.map((tile) => tile.tileIndex);
 
-			setTimeout(
-				() => {
-					if (transitions.size > 0) {
-						setTransitions(new Map());
-					}
-					handleColumnAnimationEnd(columnIndex, true);
-				},
-				1000
-			);
-		}
-		else {
-			animateTiles();
+		await animateMatchedTiles(matchedTileIndices);
+		await animateFallingTiles(matchedTileIndices);
+
+		if (!handled) {
+			handleColumnAnimationEnd(columnIndex, true);
 		}
 	};
 
 	useEffect(() => {
-		updateColumn();
-	}, [column]);
+		if (column && gridMeasurements) {
+			dispatchAnimationStates({
+				type: "clear"
+			});
+		}
+	}, [column, gridMeasurements]);
 
 	useEffect(() => {
-		if (transitions && transitions.size > 0) {
-			const longestDuration = Math.max(
-				...[...transitions]
-					.map(([, { transitionDuration, transitionDelay = "0ms" }]) => Number(transitionDuration.replace(/ms$/u, "")) + Number(transitionDelay.replace(/ms$/u, "")))
-			);
-
-			setTimeout(
-				() => {
-					setTransitions(new Map());
-					handleColumnAnimationEnd(columnIndex, false);
-				},
-				longestDuration
-			);
+		if ([...animationStates.values()].every(({ type }) => type === "none")) {
+			if (column && gridMeasurements) {
+				setCurrentColumn(column);
+			}
 		}
-	}, [transitions]);
+	}, [animationStates]);
 
-	// useEffect(() => {
-	// 	if (currentColumn) {
-	// 		setTransitions(new Map());
-	// 	}
-	// }, [currentColumn]);
+	useEffect(() => {
+		if ([...animationStates.values()].every(({ type }) => type === "none")) {
+			if (column && gridMeasurements) {
+				animateTiles();
+			}
+		}
+	}, [currentColumn]);
 
-	const debug = true;
+	useEffect(() => {
+		if (nextColumn) {
+			setCurrentNextColumn(nextColumn);
+		}
+	}, [nextColumn]);
 
 	if (!currentColumn) {
 		return (
@@ -197,9 +292,6 @@ const ColumnDisplay = ({
 				availableMoves
 			} = tile;
 
-			console.log("tile");
-			console.log(tile);
-
 			return (
 				<TileDisplay
 					key={`${columnIndex}-${tileIndex}`}
@@ -208,10 +300,10 @@ const ColumnDisplay = ({
 						availableMoves,
 						inMatch: tile.inMatch(),
 						columnHeight: column.length,
-						nextTile: nextColumn?.[tileIndex],
-						nextTransition: transitions.get(`next-${tileIndex}`),
-						transition: transitions.get(tileIndex),
-						user
+						nextTile: currentNextColumn?.[tileIndex],
+						user,
+						animationState: animationStates.get(tileIndex),
+						refillingAnimationState: animationStates.get(`refilling-${tileIndex}`)
 					}}
 				/>
 			);

@@ -124,6 +124,9 @@ const BoardDisplay = ({
 		if (boardStatesLeft.length > 0) {
 			updateBoard(boardStatesLeft[0], callback);
 		}
+		else {
+			callback();
+		}
 	};
 
 	if (boardLoading) {
