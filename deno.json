@@ -35,5 +35,6 @@
 		"exclude": [
 			"_fresh"
 		]
-	}
+	},
+	"loader": "native"
 }
