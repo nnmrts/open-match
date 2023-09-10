@@ -131,7 +131,7 @@ const ColumnsDisplay = ({
 			}}
 			ref={gridRef}
 		>
-			<li
+			<div
 				className={clsx(
 					"absolute w-[100vw]",
 					gridWidthClass
@@ -166,7 +166,7 @@ const ColumnsDisplay = ({
 								)))
 					}
 				</ul>
-			</li>
+			</div>
 			{
 				columns
 					.map((column, columnIndex) => (
