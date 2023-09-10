@@ -28,6 +28,11 @@ export default {
 			},
 			animation: {
 				match: "match 500ms ease-in-out forwards"
+			},
+			screens: {
+				"portrait-room": {
+					raw: "(min-aspect-ratio: 1/1.4)"
+				}
 			}
 		},
 		gridTemplateColumns: {

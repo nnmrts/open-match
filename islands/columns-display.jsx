@@ -91,8 +91,7 @@ const ColumnsDisplay = ({
 					}
 				});
 			}
-			catch (error) {
-				console.log(error);
+			catch {
 				// Do nothing
 			}
 		}
@@ -102,78 +101,92 @@ const ColumnsDisplay = ({
 		windowHeight
 	]);
 
+	const gridWidthClass = `
+		portrait-room:w-[
+			calc(
+				100vh -
+				var(--header-height) -
+				var(--footer-height) -
+				(var(--main-padding) * 2) -
+				var(--room-header-height) -
+				(var(--board-padding) * 2)
+			)
+		]
+	`
+		.replace(/\s|\n/gu, "");
+
 	return (
-		<>
-
-			<ul
-				className={clsx(
-					"relative grid grid-flow-col gap-2 p-2 w-full h-auto sm:w-auto sm:h-[min(100%,calc(100vw-var(--main-padding)))] z-10",
-					{
-						"pointer-events-none": boardStatesLeft.length > 0
-					}
-				)}
-				style={{
-					gridTemplateColumns: `repeat(${width}, 1fr)`,
-					gridTemplateRows: `repeat(${height}, 1fr)`,
-					aspectRatio: `${width}/${height}`
-				}}
-				ref={gridRef}
-			>
-				<li
-					className="absolute z-0 w-full h-full"
-				>
-					<ul
-						className="absolute z-0 grid h-full grid-flow-col gap-2 p-2"
-						style={{
-							gridTemplateColumns: `repeat(${width}, 1fr)`,
-							gridTemplateRows: `repeat(${height}, 1fr)`,
-							aspectRatio: `${width}/${height}`
-						}}
-					>
-						{
-							columns
-								.map((column, columnIndex) => column
-									.map(({ parity }, tileIndex) => (
-										<li
-											key={`${columnIndex}-${tileIndex}`}
-											className={clsx(
-												"h-full aspect-square p-[20%] relative w-full",
-												{
-													"backdrop-brightness-75": parity === 0,
-													"backdrop-brightness-50": parity === 1
-												}
-											)}
-										>
-											<div
-												className="w-[60%] h-[60%]"
-											></div>
-										</li>
-									)))
-						}
-					</ul>
-				</li>
-
+		<ul
+			className={clsx(
+				"relative grid grid-flow-col gap-2 p-[var(--board-padding)] w-[100vw] z-10",
+				gridWidthClass,
 				{
-					columns
-						.map((column, columnIndex) => (
-							<ColumnDisplay
-								key={columnIndex}
-								{...{
-									column,
-									columnIndex,
-									user,
-									handleColumnAnimationEnd,
-									handled: handledColumnIndices.has(columnIndex),
-									gridMeasurements,
-									nextColumn: boardStatesLeft.map((boardState) => boardState.columns[columnIndex])?.[0],
-									boardStatesLeft,
-									boardStates
-								}}
-							/>
-						))
+					"pointer-events-none": boardStatesLeft.length > 0
 				}
-			</ul>
-		</>
+			)}
+			style={{
+				gridTemplateColumns: `repeat(${width}, 1fr)`,
+				gridTemplateRows: `repeat(${height}, 1fr)`,
+				aspectRatio: `${width}/${height}`
+			}}
+			ref={gridRef}
+		>
+			<li
+				className={clsx(
+					"absolute w-[100vw]",
+					gridWidthClass
+				)}
+			>
+				<ul
+					className="relative z-0 grid w-full grid-flow-col gap-2 p-2"
+					style={{
+						gridTemplateColumns: `repeat(${width}, 1fr)`,
+						gridTemplateRows: `repeat(${height}, 1fr)`,
+						aspectRatio: `${width}/${height}`
+					}}
+				>
+					{
+						columns
+							.map((column, columnIndex) => column
+								.map(({ parity }, tileIndex) => (
+									<li
+										key={`${columnIndex}-${tileIndex}`}
+										className={clsx(
+											"aspect-square relative w-full",
+											{
+												"backdrop-brightness-75": parity === 0,
+												"backdrop-brightness-50": parity === 1
+											}
+										)}
+									>
+										<div
+											className="w-[60%] h-[60%]"
+										></div>
+									</li>
+								)))
+					}
+				</ul>
+			</li>
+			{
+				columns
+					.map((column, columnIndex) => (
+						<ColumnDisplay
+							key={columnIndex}
+							{...{
+								column,
+								columnIndex,
+								user,
+								handleColumnAnimationEnd,
+								handled: handledColumnIndices.has(columnIndex),
+								gridMeasurements,
+								nextColumn: boardStatesLeft.map((boardState) => boardState.columns[columnIndex])?.[0],
+								boardStatesLeft,
+								boardStates
+							}}
+						/>
+					))
+			}
+		</ul>
 	);
 };
 

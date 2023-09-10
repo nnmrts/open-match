@@ -1,6 +1,9 @@
 :root {
 	color-scheme: dark;
 	--main-padding: 1rem;
+	--board-padding: 0.5rem;
+	--header-height: 6rem;
+	--footer-height: 6rem;
 }
 
 html {
