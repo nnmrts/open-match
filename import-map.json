@@ -26,7 +26,7 @@
 		"@twind/preset-tailwind": "https://esm.sh/@twind/preset-tailwind@1.1.4",
 		"@twind/preset-autoprefix": "https://esm.sh/@twind/preset-autoprefix@1.0.7",
 		"@use-gesture/react": "./patches/esm.sh/v131/@use-gesture/react@10.2.27/X-ZS9yZWFjdA/esnext/react.development.js",
-		"clsx": "npm:clsx@2.0.0",
+		"clsx": "https://esm.sh/clsx@2.0.0",
 		"@react-spring/web": "https://esm.sh/@react-spring/web@9.7.3?dev&external=react,react-dom",
 		"usehooks-ts": "https://esm.sh/usehooks-ts@2.9.1?dev&external=react,react-dom",
 		"@formkit/auto-animate": "./patches/cdn.jsdelivr.net/npm/@formkit/auto-animate@0.7.0/index.mjs",

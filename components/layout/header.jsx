@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { startCase } from "npm:lodash-es";
+import { startCase } from "lodash-es";
 
 import Button from "@/components/input/button.jsx";
 import MobileMenu from "@/islands/mobile-menu.jsx";

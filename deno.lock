@@ -365,6 +365,7 @@
     "https://esm.sh/@twind/core@1.1.3": "cbcf01b8bb02bd1712f46e8364e74612a42039500e8b103134aab6a79890bb72",
     "https://esm.sh/@twind/preset-autoprefix@1.0.7": "cb5f955a7f2eb1b8ccf7531b71060b6a28f365aba6adbc1d0aae8a9e46f8aeed",
     "https://esm.sh/@twind/preset-tailwind@1.1.4": "9916eeb4d591fdaccb97f3f27c01950bbb0af85541ddb94be506e48175046dbd",
+    "https://esm.sh/clsx@2.0.0": "1fd5d904accc88791b1b4b85fb1ea8088cb47c4edeeffe2cfa5b415cdecdd23e",
     "https://esm.sh/lodash-es@4.17.21#^": "b9fce835db09e2cf7f07942846d6cdcb66e16790a9b23b8f7234322fd7edc2a0",
     "https://esm.sh/preact@10.17.1": "d9d10d95cd047fd2c26bb68e760a87d3747fafc64a1e54049095682c69c7491a",
     "https://esm.sh/preact@10.17.1/compat": "ccb04c8380e5d1cf5939e8cb49a619dab7c4940498a34eb3e77600511d6a7ef0",
@@ -396,7 +397,8 @@
     "https://esm.sh/v131/preact-render-to-string@6.2.1/X-ZS8q/denonext/preact-render-to-string.mjs": "7a5a7c19872e0cb93fe6aa398c20510b3d9f34bd6565c0ccc30cb1a90d53a6c4",
     "https://esm.sh/v131/react-icons@4.10.1/X-ZS9yZWFjdA/denonext/tb.js": "0c91a66978593750b4280843ce8d4731e25b8e050c6191d7973904d685d3821d",
     "https://esm.sh/v131/react-icons@4.10.1/X-ZS9yZWFjdCxyZWFjdC1kb20/denonext/tb.development.js": "8ae0fed8718bc0a125eec5a489ec3c7a27efec1b16b5c991e331b9598f717fb7",
-    "https://esm.sh/v131/style-vendorizer@2.2.3/denonext/style-vendorizer.mjs": "121455e7b04b631ef6463ce63cdcd29febd74d88c37713c774ceca8a1561c83d"
+    "https://esm.sh/v131/style-vendorizer@2.2.3/denonext/style-vendorizer.mjs": "121455e7b04b631ef6463ce63cdcd29febd74d88c37713c774ceca8a1561c83d",
+    "https://esm.sh/v132/clsx@2.0.0/denonext/clsx.mjs": "22bc9172d20c3760ff044850988890c5298a28f114423535958fe7a0185b15d9"
   },
   "npm": {
     "specifiers": {
