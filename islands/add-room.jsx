@@ -56,10 +56,10 @@ const AddRoom = () => {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="flex flex-col items-start gap-2"
+			className="flex flex-col items-start gap-4 pt-4 md:gap-2"
 		>
 			<div
-				className="flex items-center gap-2"
+				className="flex flex-col w-full gap-2 md:flex-row md:items-center"
 			>
 				<label htmlFor="name" className="w-64">Name</label>
 				<input
@@ -75,7 +75,7 @@ const AddRoom = () => {
 				/>
 			</div>
 			<div
-				className="flex items-center gap-2"
+				className="flex flex-col w-full gap-2 md:flex-row md:items-center"
 			>
 				<label htmlFor="width" className="w-64">Width</label>
 				<input
@@ -90,7 +90,7 @@ const AddRoom = () => {
 				/>
 			</div>
 			<div
-				className="flex items-center gap-2"
+				className="flex flex-col w-full gap-2 md:flex-row md:items-center"
 			>
 				<label htmlFor="height" className="w-64">Height</label>
 				<input
@@ -105,7 +105,7 @@ const AddRoom = () => {
 				/>
 			</div>
 			<div
-				className="flex items-center gap-2"
+				className="flex flex-col w-full gap-2 md:flex-row md:items-center"
 			>
 				<label htmlFor="numberOfDifferentPieces" className="w-64">Number of different pieces</label>
 				<input

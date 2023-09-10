@@ -19,6 +19,7 @@ const App = ({
 }) => (
 	<html>
 		<head className="dark" lang="en">
+			<meta name="viewport" content="width=device-width,initial-scale=1" />
 			<title>open-match</title>
 			<FontsStyle />
 			<link href={asset("/style/base.css")} rel="stylesheet" />

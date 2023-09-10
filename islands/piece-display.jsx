@@ -249,7 +249,7 @@ const PieceDisplay = ({
 				(currentNextTile?.piece?.color) && (
 					<div
 						className={clsx(
-							"absolute w-[60%] h-[60%] will-change-transform flex z-50 -translate-y-[400%] opacity-0 transition-[filter,color,transform,opacity]",
+							"absolute w-[70%] h-[70%] md:w-[60%] md:h-[60%] will-change-transform flex z-50 -translate-y-[400%] opacity-0 transition-[filter,color,transform,opacity]",
 							colorClasses.get(currentNextTile.piece.color),
 							{
 								"pointer-events-none": refillingTransition
@@ -263,7 +263,7 @@ const PieceDisplay = ({
 			}
 			<animated.div
 				className={clsx(
-					"absolute w-[60%] h-[60%] will-change-transform cursor-grab touch-none select-none flex active:cursor-grabbing brightness-100 duration-0",
+					"absolute w-[70%] h-[70%] md:w-[60%] md:h-[60%] will-change-transform cursor-grab touch-none select-none flex active:cursor-grabbing brightness-100 duration-0",
 					colorClasses.get(currentColor),
 					{
 						"pointer-events-none transition-[filter,color,transform] duration-0": transition || swapTransition,

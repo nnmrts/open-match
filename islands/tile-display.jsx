@@ -43,7 +43,7 @@ const TileDisplay = ({
 		<li
 			key={`${columnIndex}-${tileIndex}`}
 			className={clsx(
-				"h-full aspect-square p-[20%] relative w-full"
+				"h-full aspect-square p-[15%] md:p-[20%] relative w-full"
 			)}
 			// style={{
 			// 	zIndex: (columnHeight - tileIndex) + 1

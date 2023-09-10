@@ -229,7 +229,7 @@ const ColumnDisplay = ({
 	if (!currentColumn) {
 		return (
 			<li
-				className="h-full aspect-square p-[20%] relative w-full"
+				className="h-full aspect-square p-[15%] md:p-[20%] relative w-full"
 			/>
 		);
 	}

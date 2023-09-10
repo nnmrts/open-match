@@ -43,12 +43,19 @@ const Room = ({
 		<section className="relative flex flex-col items-center h-full border-0 rounded md:border-4 border-neutral-900 [--room-header-height:5rem]">
 			<style>
 				{`
-				main {
-					display: flex;
-					flex-direction: column;
-					height: calc(100vh - 12rem);
-				}
-			`}
+					main {
+						display: flex;
+						flex-direction: column;
+						height: calc(100vh - 12rem);
+						--main-padding: 0rem;
+					}
+
+					@media (min-width: 768px) {
+						main {
+							--main-padding: 2rem;
+						}
+					}
+				`}
 			</style>
 			<h2 className="flex items-center w-full  h-[var(--room-header-height)] p-4 bg-neutral-600">Room {name}</h2>
 

@@ -1,5 +1,6 @@
 :root {
 	color-scheme: dark;
+	--main-padding: 1rem;
 }
 
 html {
