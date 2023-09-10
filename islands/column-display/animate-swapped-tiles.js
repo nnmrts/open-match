@@ -15,7 +15,7 @@ const animateSwappedTiles = async ({
 	currentColumn,
 	dispatch
 }) => {
-	let totalDuration = 0;
+	const totalDuration = minDuration;
 
 	if (currentColumn) {
 		const matchedTileIndices = currentColumn
@@ -32,8 +32,6 @@ const animateSwappedTiles = async ({
 				}) => color !== column[tileIndex].piece.color);
 
 			if (changedTiles.length > 0) {
-				totalDuration = minDuration;
-
 				const {
 					height: {
 						value: gridHeight,
