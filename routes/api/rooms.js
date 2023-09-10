@@ -2,7 +2,7 @@ import { kv } from "@/utilities/server.js";
 import Board from "@/logic/board.js";
 
 const handler = {
-	GET: async (request, context) => {
+	GET: async () => {
 		const roomEntries = await kv.list({ prefix: ["rooms"] });
 
 		const rooms = [];
@@ -20,7 +20,7 @@ const handler = {
 			}
 		);
 	},
-	POST: async (request, context) => {
+	POST: async (request, { state: { user: { name: userName } } }) => {
 		const {
 			name,
 			width,

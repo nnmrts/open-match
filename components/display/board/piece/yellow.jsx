@@ -1,5 +1,7 @@
 import clsx from "clsx";
 
+import { colorClasses } from "@/utilities/client.js";
+
 /**
  *
  * @param props
@@ -10,7 +12,7 @@ const YellowPiece = ({ className }) => (
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 4000 4000"
 		className={clsx(
-			"text-yellow-600",
+			colorClasses.get("yellow"),
 			className
 		)}
 	>

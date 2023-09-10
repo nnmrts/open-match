@@ -1,9 +1,9 @@
 /**
  *
- * @param root0
- * @param root0.api
- * @param root0.x
- * @param root0.y
+ * @param options
+ * @param options.api
+ * @param options.x
+ * @param options.y
  */
 const effectPosition = ({
 	api,

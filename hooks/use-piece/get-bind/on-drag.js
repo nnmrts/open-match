@@ -28,6 +28,9 @@ const onDrag = ({
 		? "horizontal"
 		: "vertical";
 
+	const post = Math.round(elapsedTime) % clientUpdateInterval === 0 &&
+		Math.abs(xOffset) >= minRelevantOffset;
+
 	if (type === "horizontal") {
 		api.start({
 			x: xOffset,
@@ -36,18 +39,14 @@ const onDrag = ({
 			immediate: (name) => name === "x"
 		});
 
-		if (
-			Math.round(elapsedTime) % clientUpdateInterval === 0 &&
-						Math.abs(xOffset) >= minRelevantOffset
-		) {
-			handleMoveAttempt(
-				directions.get(type).get(Math.sign(xOffset)),
-				{
-					tileIndex,
-					columnIndex
-				}
-			);
-		}
+		handleMoveAttempt(
+			directions.get(type).get(Math.sign(xOffset)),
+			{
+				tileIndex,
+				columnIndex,
+				post
+			}
+		);
 	}
 	else if (type === "vertical") {
 		api.start({
@@ -57,18 +56,14 @@ const onDrag = ({
 			immediate: (name) => name === "y"
 		});
 
-		if (
-			Math.round(elapsedTime) % clientUpdateInterval === 0 &&
-						Math.abs(yOffset) >= minRelevantOffset
-		) {
-			handleMoveAttempt(
-				directions.get(type).get(Math.sign(yOffset)),
-				{
-					tileIndex,
-					columnIndex
-				}
-			);
-		}
+		handleMoveAttempt(
+			directions.get(type).get(Math.sign(yOffset)),
+			{
+				tileIndex,
+				columnIndex,
+				post
+			}
+		);
 	}
 };
 

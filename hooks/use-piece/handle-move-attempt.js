@@ -7,12 +7,14 @@ import useBoardId from "@/hooks/use-board-id.js";
  * @param options
  * @param options.columnIndex
  * @param options.tileIndex
+ * @param options.post
  */
 const handleMoveAttempt = async (
 	direction,
 	{
 		columnIndex,
-		tileIndex
+		tileIndex,
+		post = true
 	}
 ) => {
 	const boardId = useBoardId();
@@ -27,16 +29,18 @@ const handleMoveAttempt = async (
 
 	moveAttemptSignal.value = value;
 
-	await fetch(
-		`/api/rooms/${boardId}/move-attempt`,
-		{
-			method: "POST",
-			headers: new Headers({
-				"content-type": "application/json"
-			}),
-			body: JSON.stringify(value)
-		}
-	);
+	if (post) {
+		await fetch(
+			`/api/rooms/${boardId}/move-attempt`,
+			{
+				method: "POST",
+				headers: new Headers({
+					"content-type": "application/json"
+				}),
+				body: JSON.stringify(value)
+			}
+		);
+	}
 };
 
 export default handleMoveAttempt;

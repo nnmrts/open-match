@@ -20,11 +20,7 @@ const handler = {
 /**
  *
  * @param props
- * @param props.params
- * @param props.params.room
- * @param room
  * @param props.data
- * @param props.data.room
  * @param props.data.name
  * @param props.data.board
  * @param props.data.id
@@ -44,7 +40,7 @@ const Room = ({
 	const userSignal = useSignal(user);
 
 	return (
-		<section className="relative flex flex-col items-center h-full border-0 rounded md:border-4 border-neutral-900">
+		<section className="relative flex flex-col items-center h-full border-0 rounded md:border-4 border-neutral-900 [--room-header-height:5rem]">
 			<style>
 				{`
 				main {
@@ -54,7 +50,7 @@ const Room = ({
 				}
 			`}
 			</style>
-			<h2 className="flex items-center w-full h-20 p-4 bg-neutral-600">Room {name}</h2>
+			<h2 className="flex items-center w-full  h-[var(--room-header-height)] p-4 bg-neutral-600">Room {name}</h2>
 
 			<BoardDisplay
 				{...{

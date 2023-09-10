@@ -1,25 +1,78 @@
-import {
-	useEffect, useState, useReducer
-} from "preact/hooks";
+import { useEffect, useReducer } from "preact/hooks";
 
 import TileDisplay from "./tile-display.jsx";
+import animateMatchedTiles from "./column-display/animate-matched-tiles.js";
+import animateFallingTiles from "./column-display/animate-falling-tiles.js";
+import animateSwappedTiles from "./column-display/animate-swapped-tiles.js";
 
 const minDuration = 250;
 const maxDuration = 500;
 
 const reducer = (state, action) => {
-	const {
-		type,
-		payload
-	} = action;
+	const { type, payload } = action;
 
 	switch (type) {
+		case "ADVANCE":
+			return {
+				...state,
+				animationStep: state.animationStep + 1
+			};
+		case "RESET_ANIMATIONS_AND_ADVANCE":
+			return {
+				...state,
+				animationStates: new Map(
+					[...state.animationStates]
+						.map(([key]) => [key, { type: "none" }])
+				),
+				animationStep: state.animationStep + 1
+			};
+		case "RESET":
+			return {
+				...state,
+				animationStep: 0
+			};
+		case "CLEAR_ANIMATIONS_AND_ADVANCE":
+			return {
+				...state,
+				animationStates: new Map(
+					[...state.animationStates]
+						.map(([key]) => [key, { type: "none" }])
+				),
+				animationStep: state.animationStep + 1
+			};
+		case "SET_ANIMATION_AND_COLUMN_AND_ADVANCE":
+			return {
+				...state,
+				animationStates: payload.animationStates,
+				currentColumn: payload.currentColumn,
+				currentNextColumn: payload.currentNextColumn,
+				animationStep: state.animationStep + 1
+			};
+
 		case "set":
-			return new Map([...state, ...payload]);
-		case "delete":
-			return new Map([...state].filter(([key]) => key !== payload));
+			return {
+				...state,
+				animationStates: new Map([...state.animationStates, ...payload])
+			};
+
 		case "clear":
-			return new Map([...state].map(([key]) => [key, { type: "none" }]));
+			return {
+				...state,
+				animationStates: new Map(
+					[...state.animationStates]
+						.map(([key]) => [key, { type: "none" }])
+				)
+			};
+
+		case "stop":
+			return {
+				...state,
+				animationStates: new Map(
+					[...state.animationStates]
+						.map(([key]) => [key, { type: "stop" }])
+				)
+			};
+
 		default:
 			return state;
 	}
@@ -35,6 +88,8 @@ const reducer = (state, action) => {
  * @param props.gridMeasurements
  * @param props.nextColumn
  * @param props.handled
+ * @param props.boardStatesLeft
+ * @param props.boardStates
  */
 // eslint-disable-next-line max-lines-per-function
 const ColumnDisplay = ({
@@ -44,239 +99,132 @@ const ColumnDisplay = ({
 	handleColumnAnimationEnd,
 	handled,
 	gridMeasurements,
-	nextColumn
+	nextColumn,
+	boardStatesLeft,
+	boardStates
 }) => {
-	const [currentColumn, setCurrentColumn] = useState(null);
-	const [currentNextColumn, setCurrentNextColumn] = useState(null);
-	const [animationStates, dispatchAnimationStates] = useReducer(
-		reducer,
-		new Map([
+	const debug = columnIndex === 0;
+
+	const initialState = {
+		animationStates: new Map([
 			...column.map((tile) => [
-				[
-					tile.tileIndex,
-					{
-						type: "none"
-					}
-				],
-				[
-					`refilling-${tile.tileIndex}`,
-					{
-						type: "none"
-					}
-				]
+				[tile.tileIndex, { type: "none" }],
+				[`refilling-${tile.tileIndex}`, { type: "none" }],
+				[`swap-${tile.tileIndex}`, { type: "none" }]
 			]).flat()
-		])
-	);
-
-	const animateMatchedTiles = async (matchedTileIndices) => {
-		for (const tileIndex of matchedTileIndices) {
-			dispatchAnimationStates({
-				type: "set",
-				payload: [
-					[
-						tileIndex,
-						{
-							type: "matching",
-							durationMilliseconds: minDuration
-						}
-					]
-				]
-			});
-		}
-
-		await new Promise((resolve) => {
-			setTimeout(resolve, minDuration);
-		});
-
-		for (const tileIndex of matchedTileIndices) {
-			dispatchAnimationStates({
-				type: "set",
-				payload: [
-					[
-						tileIndex,
-						{
-							type: "matched",
-							durationMilliseconds: maxDuration
-						}
-					]
-				]
-			});
-		}
-
-		await new Promise((resolve) => {
-			setTimeout(resolve, maxDuration);
-		});
+		]),
+		currentColumn: null,
+		currentNextColumn: null,
+		animationStep: 0
 	};
 
-	const animateFallingTiles = async (matchedTileIndices) => {
-		const {
-			height: {
-				value: gridHeight,
-				unit: gridHeightUnit
-			},
-			gap: {
-				value: gap,
-				unit: gapUnit
-			},
-			tileHeight: {
-				value: tileHeight,
-				unit: tileHeightUnit
-			}
-		} = gridMeasurements;
-
-		const fallingTiles = column
-			.filter(({ tileIndex }) => !matchedTileIndices.includes(tileIndex))
-			.map(({ vicinity, tileIndex }) => {
-				let numberOfMatchedTilesBelow = 0;
-				let tileBelow = vicinity.get("bottom");
-
-				while (tileBelow) {
-					if (tileBelow.inMatch()) {
-						numberOfMatchedTilesBelow += 1;
-					}
-
-					tileBelow = tileBelow.vicinity.get("bottom");
-				}
-
-				return [tileIndex, numberOfMatchedTilesBelow];
-			})
-			.filter(([, numberOfMatchedTilesBelow]) => numberOfMatchedTilesBelow > 0);
-
-		let totalDuration = 0;
-
-		for (const [tileIndex, numberOfMatchedTilesBelow] of fallingTiles) {
-			const durationMilliseconds = (
-				(tileIndex * (maxDuration - minDuration)) /
-				(column.length - 1)
-			) +
-			minDuration;
-
-			const gapPixels = gapUnit === "pixel" ? gap : gridHeight * (gap / 100);
-
-			const offsetInPixels = (
-				(
-					gapPixels +
-					tileHeight
-				) *
-				numberOfMatchedTilesBelow
-			);
-
-			dispatchAnimationStates({
-				type: "set",
-				payload: [
-					[
-						tileIndex,
-						{
-							type: "falling",
-							durationMilliseconds,
-							offsetInPixels
-						}
-					]
-				]
-			});
-
-			totalDuration = Math.max(totalDuration, durationMilliseconds);
-		}
-
-		const emptyTileIndices = Array(matchedTileIndices.length)
-			.fill()
-			.map((empty, index) => index);
-
-		for (const emptyTileIndex of emptyTileIndices) {
-			const durationMilliseconds = (
-				(emptyTileIndex * (maxDuration - minDuration)) /
-				(column.length - 1)
-			) +
-			minDuration;
-
-			const gapPixels = gapUnit === "pixel" ? gap : gridHeight * (gap / 100);
-
-			const offsetInPixels = (
-				(
-					gapPixels +
-					tileHeight
-				) *
-				emptyTileIndices.length
-			);
-
-			dispatchAnimationStates({
-				type: "set",
-				payload: [
-					[
-						`refilling-${emptyTileIndex}`,
-						{
-							type: "falling",
-							durationMilliseconds
-						}
-					]
-				]
-			});
-
-			totalDuration = Math.max(totalDuration, durationMilliseconds);
-		}
-
-		await new Promise((resolve) => {
-			setTimeout(resolve, totalDuration);
-		});
-	};
+	const [state, dispatch] = useReducer(reducer, initialState);
+	const {
+		animationStates,
+		currentColumn,
+		currentNextColumn,
+		animationStep
+	} = state;
 
 	const animateTiles = async () => {
-		const {
-			height: {
-				value: gridHeight,
-				unit: gridHeightUnit
-			},
-			gap: {
-				value: gap,
-				unit: gapUnit
-			},
-			tileHeight: {
-				value: tileHeight,
-				unit: tileHeightUnit
-			}
-		} = gridMeasurements;
-
 		const matchedTileIndices = column
 			.filter((tile) => tile.inMatch())
 			.map((tile) => tile.tileIndex);
 
-		await animateMatchedTiles(matchedTileIndices);
-		await animateFallingTiles(matchedTileIndices);
+		await animateMatchedTiles({
+			matchedTileIndices,
+			dispatch
+		});
 
-		if (!handled) {
-			handleColumnAnimationEnd(columnIndex, true);
-		}
+		await animateFallingTiles({
+			matchedTileIndices,
+			gridMeasurements,
+			column,
+			dispatch
+		});
 	};
 
 	useEffect(() => {
+		// Start the animation sequence when column and gridMeasurements are available
 		if (column && gridMeasurements) {
-			dispatchAnimationStates({
-				type: "clear"
+			dispatch({
+				type: "ADVANCE"
 			});
 		}
 	}, [column, gridMeasurements]);
 
 	useEffect(() => {
-		if ([...animationStates.values()].every(({ type }) => type === "none")) {
-			if (column && gridMeasurements) {
-				setCurrentColumn(column);
+		if (animationStep === 1) {
+			// Clear animation states
+			dispatch({
+				type: "CLEAR_ANIMATIONS_AND_ADVANCE"
+			});
+		}
+
+		if (animationStep === 2) {
+			if (boardStatesLeft.length === boardStates.length - 1) {
+				// Perform swapped tile animations if on first board state
+				animateSwappedTiles({
+					gridMeasurements,
+					column,
+					currentColumn,
+					dispatch
+				}).then(() => {
+					dispatch({
+						type: "ADVANCE"
+					});
+				});
+			}
+			else {
+				// only dispatch advance
+				dispatch({
+					type: "ADVANCE"
+				});
 			}
 		}
-	}, [animationStates]);
 
-	useEffect(() => {
-		if ([...animationStates.values()].every(({ type }) => type === "none")) {
-			if (column && gridMeasurements) {
-				animateTiles();
+		if (animationStep === 3) {
+			// Stop animations and set current column simultaneously
+
+			dispatch({
+				type: "SET_ANIMATION_AND_COLUMN_AND_ADVANCE",
+				payload: {
+					animationStates: new Map(
+						[...animationStates]
+							.map(([key, { type }]) => [key, { type: key.startsWith?.("swap") ? "stop" : type }])
+					),
+					currentColumn: column,
+					currentNextColumn: nextColumn
+				}
+			});
+		}
+
+		if (animationStep === 4) {
+			// Animate tiles after current column is set
+			animateTiles().then(() => {
+				dispatch({
+					type: "ADVANCE"
+				});
+			});
+		}
+
+		if (animationStep === 5) {
+			// Reset everything
+			dispatch({
+				type: "RESET_ANIMATIONS_AND_ADVANCE"
+			});
+		}
+
+		if (animationStep === 6) {
+			if (!handled) {
+				handleColumnAnimationEnd(columnIndex);
 			}
-		}
-	}, [currentColumn]);
 
-	useEffect(() => {
-		if (nextColumn) {
-			setCurrentNextColumn(nextColumn);
+			dispatch({
+				type: "RESET"
+			});
 		}
-	}, [nextColumn]);
+	}, [animationStep]);
 
 	if (!currentColumn) {
 		return (
@@ -303,7 +251,8 @@ const ColumnDisplay = ({
 						nextTile: currentNextColumn?.[tileIndex],
 						user,
 						animationState: animationStates.get(tileIndex),
-						refillingAnimationState: animationStates.get(`refilling-${tileIndex}`)
+						refillingAnimationState: animationStates.get(`refilling-${tileIndex}`),
+						swapAnimationState: animationStates.get(`swap-${tileIndex}`)
 					}}
 				/>
 			);

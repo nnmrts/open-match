@@ -11,18 +11,23 @@ import * as $5 from "./routes/api/rooms/[id].js";
 import * as $6 from "./routes/api/rooms/[id]/events.js";
 import * as $7 from "./routes/api/rooms/[id]/move-attempt.js";
 import * as $8 from "./routes/api/rooms/[id]/move.js";
-import * as $9 from "./routes/api/rooms/[id]/shuffle.js";
-import * as $10 from "./routes/index.jsx";
-import * as $11 from "./routes/new.jsx";
+import * as $9 from "./routes/api/rooms/[id]/player.js";
+import * as $10 from "./routes/api/rooms/[id]/shuffle.js";
+import * as $11 from "./routes/index.jsx";
+import * as $12 from "./routes/new.jsx";
 import * as $$0 from "./islands/add-room.jsx";
 import * as $$1 from "./islands/board-display.jsx";
 import * as $$2 from "./islands/column-display.jsx";
-import * as $$3 from "./islands/columns-display.jsx";
-import * as $$4 from "./islands/login-form.jsx";
-import * as $$5 from "./islands/mobile-menu.jsx";
-import * as $$6 from "./islands/piece-display.jsx";
-import * as $$7 from "./islands/rooms-list.jsx";
-import * as $$8 from "./islands/tile-display.jsx";
+import * as $$3 from "./islands/column-display/animate-falling-tiles.js";
+import * as $$4 from "./islands/column-display/animate-matched-tiles.js";
+import * as $$5 from "./islands/column-display/animate-swapped-tiles.js";
+import * as $$6 from "./islands/column-display/constants.js";
+import * as $$7 from "./islands/columns-display.jsx";
+import * as $$8 from "./islands/login-form.jsx";
+import * as $$9 from "./islands/mobile-menu.jsx";
+import * as $$10 from "./islands/piece-display.jsx";
+import * as $$11 from "./islands/rooms-list.jsx";
+import * as $$12 from "./islands/tile-display.jsx";
 
 const manifest = {
   routes: {
@@ -35,20 +40,25 @@ const manifest = {
     "./routes/api/rooms/[id]/events.js": $6,
     "./routes/api/rooms/[id]/move-attempt.js": $7,
     "./routes/api/rooms/[id]/move.js": $8,
-    "./routes/api/rooms/[id]/shuffle.js": $9,
-    "./routes/index.jsx": $10,
-    "./routes/new.jsx": $11,
+    "./routes/api/rooms/[id]/player.js": $9,
+    "./routes/api/rooms/[id]/shuffle.js": $10,
+    "./routes/index.jsx": $11,
+    "./routes/new.jsx": $12,
   },
   islands: {
     "./islands/add-room.jsx": $$0,
     "./islands/board-display.jsx": $$1,
     "./islands/column-display.jsx": $$2,
-    "./islands/columns-display.jsx": $$3,
-    "./islands/login-form.jsx": $$4,
-    "./islands/mobile-menu.jsx": $$5,
-    "./islands/piece-display.jsx": $$6,
-    "./islands/rooms-list.jsx": $$7,
-    "./islands/tile-display.jsx": $$8,
+    "./islands/column-display/animate-falling-tiles.js": $$3,
+    "./islands/column-display/animate-matched-tiles.js": $$4,
+    "./islands/column-display/animate-swapped-tiles.js": $$5,
+    "./islands/column-display/constants.js": $$6,
+    "./islands/columns-display.jsx": $$7,
+    "./islands/login-form.jsx": $$8,
+    "./islands/mobile-menu.jsx": $$9,
+    "./islands/piece-display.jsx": $$10,
+    "./islands/rooms-list.jsx": $$11,
+    "./islands/tile-display.jsx": $$12,
   },
   baseUrl: import.meta.url,
 };

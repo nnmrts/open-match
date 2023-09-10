@@ -6,3 +6,4 @@ export { default as axisVariables } from "./shared/axis-variables.js";
 export { default as getCssUnit } from "./client/get-css-unit.js";
 export { default as cssUnitUnitStrings } from "./client/css-unit-unit-strings.js";
 export { default as directions } from "./client/directions.js";
+export { default as colorClasses } from "./client/color-classes.js";

@@ -3,9 +3,9 @@ import { axisVariables, directionAxes } from "@/utilities/client.js";
 /**
  *
  * @param direction
- * @param root0
- * @param root0.api
- * @param root0.maxOffset
+ * @param options
+ * @param options.api
+ * @param options.maxOffset
  */
 const handleUnavailableMove = (direction, { api, maxOffset }) => {
 	api.start({

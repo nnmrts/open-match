@@ -3,10 +3,27 @@ import Tile from "./tile.js";
 import { uint32ArrayMax } from "@/constants.js";
 
 /**
+ * @typedef {import("./piece.js").default} Piece
+ */
+
+/**
+ * Column.
  *
+ * @class Column
+ * @augments Array
  */
 const Column = class extends Array {
 
+	/**
+	 * Decorates a column.
+	 *
+	 * @param {object} options - Options.
+	 * @param {number} options.columnIndex - Column index.
+	 * @param {Piece[]} options.pieces - Pieces.
+	 * @param {number} options.numberOfDifferentPieces - Number of different pieces.
+	 * @param {number} options.boardHeight - Board height.
+	 * @return {Column} Column.
+	 */
 	decorate = ({
 		columnIndex,
 		pieces,
@@ -67,7 +84,9 @@ const Column = class extends Array {
 	snapshot = () => structuredClone([...this.map((tile) => tile.snapshot())]);
 
 	/**
+	 * Gets available moves in the column.
 	 *
+	 * @return {Set} Available moves.
 	 */
 	get availableMoves() {
 		return new Set(

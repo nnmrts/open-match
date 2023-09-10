@@ -18,6 +18,7 @@ import PieceDisplay from "@/islands/piece-display.jsx";
  * @param props.inMatch
  * @param props.animationState
  * @param props.refillingAnimationState
+ * @param props.swapAnimationState
  */
 const TileDisplay = ({
 	columnIndex,
@@ -33,6 +34,7 @@ const TileDisplay = ({
 	inMatch,
 	animationState,
 	refillingAnimationState,
+	swapAnimationState,
 	...tile
 }) => {
 	const debug = false;
@@ -41,60 +43,12 @@ const TileDisplay = ({
 		<li
 			key={`${columnIndex}-${tileIndex}`}
 			className={clsx(
-				"h-full aspect-square p-[20%] relative w-full",
-				{
-					"backdrop-brightness-75": parity === 0,
-					"backdrop-brightness-50": parity === 1,
-					"border border-red-600": debug && inMatch
-				}
+				"h-full aspect-square p-[20%] relative w-full"
 			)}
-			style={{
-				zIndex: (columnHeight - tileIndex) + 1
-			}}
+			// style={{
+			// 	zIndex: (columnHeight - tileIndex) + 1
+			// }}
 		>
-			{
-				availableMoves.size > 0 && (
-					<div
-						className="absolute top-0 left-0 flex flex-col items-center justify-between w-full h-full pointer-events-none"
-					>
-						<div
-							className={clsx(
-								"bg-white h-1/4 w-1",
-								{
-									"opacity-0": !debug || !availableMoves.has("up")
-								}
-							)}
-						/>
-						<div className="flex justify-between w-full">
-							<div
-								className={clsx(
-									"bg-white h-1 w-1/4",
-									{
-										"opacity-0": !debug || !availableMoves.has("left")
-									}
-								)}
-							/>
-							<div
-								className={clsx(
-									"bg-white h-1 w-1/4",
-									{
-										"opacity-0": !debug || !availableMoves.has("right")
-									}
-								)}
-							/>
-						</div>
-						<div
-							className={clsx(
-								"bg-white h-1/4 w-1",
-								{
-									"opacity-0": !debug || !availableMoves.has("down")
-								}
-							)}
-						/>
-					</div>
-
-				)
-			}
 			<PieceDisplay
 				{...{
 					...piece,
@@ -104,6 +58,7 @@ const TileDisplay = ({
 					inMatch,
 					nextTile,
 					refillingAnimationState,
+					swapAnimationState,
 					tile,
 					tileIndex,
 					transition,

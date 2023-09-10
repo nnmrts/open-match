@@ -1,8 +1,8 @@
 import { kv } from "@/utilities/server.js";
 
 const handler = {
-	GET: async (request, { params: { id } }) => {
-		const room = await kv.get(["rooms", id]);
+	GET: async (request, { state: { user: { name: userName } }, params: { id } }) => {
+		const { value: room } = await kv.get(["rooms", id]);
 
 		return new Response(
 			JSON.stringify(room),

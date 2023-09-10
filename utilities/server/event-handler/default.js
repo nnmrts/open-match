@@ -1,7 +1,7 @@
 /**
  *
- * @param root0
- * @param root0.data
+ * @param options
+ * @param options.data
  */
 const defaultEventHandler = ({
 	data

@@ -11,7 +11,7 @@ const {
 } = Math;
 
 /**
- *
+ * Board.
  */
 const Board = class {
 
@@ -33,7 +33,13 @@ const Board = class {
 
 	static #defaultNumberOfDifferentPieces = this.#defaultPieces.length;
 
-	static #defaultTilesNeededToMatch = 3;
+	static #defaultPiecesNeededToMatch = 3;
+
+	static #defaultNumberOfTurns = 4;
+
+	static #defaultNumberOfMovesPerTurn = 2;
+
+	static #defaultNumberOfPlayers = 2;
 
 	#updateVicinities = () => {
 		const {
@@ -121,12 +127,15 @@ const Board = class {
 	};
 
 	/**
+	 * Get random columns.
 	 *
-	 * @param options
-	 * @param options.width
-	 * @param options.height
-	 * @param options.pieces
-	 * @param options.numberOfDifferentPieces
+	 * @param {object} options - Options.
+	 * @param {number} options.width - Width of the board.
+	 * @param {number} options.height - Height of the board.
+	 * @param {Piece[]} options.pieces - Pieces.
+	 * @param {number} options.numberOfDifferentPieces - Number of different pieces.
+	 *
+	 * @return {Column[]} Random columns.
 	 */
 	static getRandomColumns({
 		width,
@@ -156,17 +165,17 @@ const Board = class {
 		const {
 			width,
 			height,
-			tilesNeededToMatch,
+			piecesNeededToMatch,
 			numberOfDifferentPieces
 		} = this;
 
 		if (width <= 1 || height <= 1) {
 			throw new Error("Board is too small.");
 		}
-		if (width < tilesNeededToMatch || height < tilesNeededToMatch) {
+		if (width < piecesNeededToMatch || height < piecesNeededToMatch) {
 			throw new Error("Board is too small to have any matches.");
 		}
-		else if (tilesNeededToMatch <= 1) {
+		else if (piecesNeededToMatch <= 1) {
 			throw new Error("Board would match indefinitely.");
 		}
 		else if (numberOfDifferentPieces < 2) {
@@ -181,40 +190,57 @@ const Board = class {
 	 * @param {number} options.width - Width of the board.
 	 * @param {number} options.height - Height of the board.
 	 * @param {string|string[]} options.shape - Shape of the board.
-	 * @param {number} options.numberOfDifferentPieces - Number of different pieces.
 	 * @param {Piece[]} options.pieces - Pieces.
-	 * @param options.id
-	 * @param {Array} options.columns
-	 * @param options.tilesNeededToMatch
+	 * @param {number} options.numberOfDifferentPieces - Number of different pieces.
+	 * @param {number} options.piecesNeededToMatch - Number of pieces needed to match.
+	 * @param {number} options.numberOfTurns - Number of turns.
+	 * @param {number} options.numberOfMovesPerTurn - Number of moves per turn.
+	 * @param {number} options.numberOfPlayers - Number of players.
+	 * @param {string} options.id - ID of the board.
+	 * @param {Column[]} options.columns - Columns.
 	 */
 	constructor({
-		width = Board.#defaultWidth,
 		height = Board.#defaultHeight,
+		width = Board.#defaultWidth,
+
 		shape = Board.#defaultShape,
+
 		pieces = Board.#defaultPieces,
 		numberOfDifferentPieces = pieces?.length ?? Board.#defaultNumberOfDifferentPieces,
-		tilesNeededToMatch = Board.#defaultTilesNeededToMatch,
-		id = crypto.randomUUID(),
+		piecesNeededToMatch = Board.#defaultPiecesNeededToMatch,
+
+		numberOfMovesPerTurn = Board.#defaultNumberOfMovesPerTurn,
+		numberOfPlayers = Board.#defaultNumberOfPlayers,
+		numberOfTurns = Board.#defaultNumberOfTurns,
+
 		columns = Board.getRandomColumns({
 			width: width ?? Board.#defaultWidth,
 			height: height ?? Board.#defaultHeight,
 			pieces: pieces ?? Board.#defaultPieces,
 			numberOfDifferentPieces
-		})
+		}),
+		id = crypto.randomUUID()
 	} = {
-		width: Board.#defaultWidth,
 		height: Board.#defaultHeight,
+		width: Board.#defaultWidth,
+
 		shape: Board.#defaultShape,
+
 		numberOfDifferentPieces: Board.#defaultNumberOfDifferentPieces,
 		pieces: Board.#defaultPieces,
-		tilesNeededToMatch: Board.#defaultTilesNeededToMatch,
-		id: crypto.randomUUID(),
+		piecesNeededToMatch: Board.#defaultPiecesNeededToMatch,
+
+		numberOfMovesPerTurn: Board.#defaultNumberOfMovesPerTurn,
+		numberOfPlayers: Board.#defaultNumberOfPlayers,
+		numberOfTurns: Board.#defaultNumberOfTurns,
+
 		columns: Board.getRandomColumns({
 			width: Board.#defaultWidth,
 			height: Board.#defaultHeight,
 			pieces: Board.#defaultPieces,
 			numberOfDifferentPieces: Board.#defaultNumberOfDifferentPieces
-		})
+		}),
+		id: crypto.randomUUID()
 	}) {
 		this.width = width;
 		this.height = height;
@@ -223,7 +249,7 @@ const Board = class {
 			? piece
 			: Piece.from(piece)));
 		this.numberOfDifferentPieces = numberOfDifferentPieces ?? this.pieces.length;
-		this.tilesNeededToMatch = tilesNeededToMatch;
+		this.piecesNeededToMatch = piecesNeededToMatch;
 
 		this.validate();
 
@@ -315,25 +341,27 @@ const Board = class {
 	};
 
 	/**
+	 * Tests if a deadlock is possible.
 	 *
+	 * @return {boolean} True if a deadlock is possible.
 	 */
 	get deadlockPossible() {
 		const {
 			width,
 			height,
 			numberOfDifferentPieces,
-			tilesNeededToMatch
+			piecesNeededToMatch
 		} = this;
 
 		const upperBound = (
 			(width * height) /
-			(min((tilesNeededToMatch - 1) * height, (tilesNeededToMatch - 1) * width))
+			(min((piecesNeededToMatch - 1) * height, (piecesNeededToMatch - 1) * width))
 		);
 		const lowerBound = (
 			1 +
 			(
-				((width * height) - max(tilesNeededToMatch * height, tilesNeededToMatch * width)) /
-				(min((tilesNeededToMatch - 1) * height, (tilesNeededToMatch - 1) * width))
+				((width * height) - max(piecesNeededToMatch * height, piecesNeededToMatch * width)) /
+				(min((piecesNeededToMatch - 1) * height, (piecesNeededToMatch - 1) * width))
 			)
 		);
 
@@ -346,7 +374,9 @@ const Board = class {
 	}
 
 	/**
+	 * Gets available moves on the board.
 	 *
+	 * @return {Set} Available moves.
 	 */
 	get availableMoves() {
 		const { columns } = this;
@@ -362,7 +392,9 @@ const Board = class {
 	}
 
 	/**
+	 * Tests if there are available moves and no matches.
 	 *
+	 * @return {boolean} True if there are available moves and no matches.
 	 */
 	get availableMovesAndNoMatches() {
 		const {
@@ -391,7 +423,7 @@ const Board = class {
 
 		const piecesArray = columns.map((column) => column.map((tile) => tile.piece)).flat(2);
 
-		const limit = deadlockPossible ? 1_000 : 1_000;
+		const limit = deadlockPossible ? 1_000 : 10_000;
 
 		const newPiecesArray = await findPermutation(
 			piecesArray,

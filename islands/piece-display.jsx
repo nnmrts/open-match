@@ -13,50 +13,7 @@ import {
 	usePiece
 } from "@/hooks.js";
 import Piece from "@/components/display/board/piece.jsx";
-
-const getPosition = ({
-	moveAttemptDirection,
-	moveAttemptTileVicinityEntryPosition,
-	offset
-}) => {
-	const position = {
-		x: 0,
-		y: 0
-	};
-
-	switch (moveAttemptDirection) {
-		case "left":
-		case "right":
-			switch (moveAttemptTileVicinityEntryPosition) {
-				case "left":
-					position.x = -offset;
-					break;
-				case "right":
-					position.x = offset;
-					break;
-
-				// no default
-			}
-			break;
-		case "up":
-		case "down":
-			switch (moveAttemptTileVicinityEntryPosition) {
-				case "top":
-					position.y = -offset;
-					break;
-				case "bottom":
-					position.y = offset;
-					break;
-
-				// no default
-			}
-			break;
-
-		// no default
-	}
-
-	return position;
-};
+import { colorClasses } from "@/utilities/client.js";
 
 /**
  *
@@ -73,6 +30,7 @@ const getPosition = ({
  * @param props.tileIndex
  * @param props.animationState
  * @param props.refillingAnimationState
+ * @param props.swapAnimationState
  */
 // eslint-disable-next-line max-lines-per-function, max-statements
 const PieceDisplay = ({
@@ -85,7 +43,8 @@ const PieceDisplay = ({
 	columnIndex,
 	tileIndex,
 	animationState,
-	refillingAnimationState
+	refillingAnimationState,
+	swapAnimationState
 }) => {
 	const boardId = useBoardId();
 
@@ -131,108 +90,189 @@ const PieceDisplay = ({
 		]
 	);
 
-	const [transition, setTransition] = useState(null);
-	const [refillingTransition, setRefillingTransition] = useState(null);
-	const [colorClass, setColorClass] = useState(null);
+	// Unified state for the display
+	const [displayState, setDisplayState] = useState({
+		transition: null,
+		refillingTransition: null,
+		swapTransition: null,
+		currentColor: null,
+		currentNextTile: null,
+		currentTile: null
+	});
 
-	const debug = true;
+	const {
+		swapTransition,
+		transition,
+		refillingTransition,
+		currentColor,
+		currentNextTile,
+		currentTile
+	} = displayState;
 
-	useEffect(() => {
+	// eslint-disable-next-line max-lines-per-function
+	const computeNextState = () => {
+		const nextState = { ...displayState };
+
+		nextState.currentColor = color;
+		nextState.currentNextTile = nextTile;
+		nextState.currentTile = tile;
+
+		// Logic for swapAnimationState
 		const {
-			type,
-			durationMilliseconds,
-			offsetInPixels
+			type: swapType,
+			durationMilliseconds: swapDuration,
+			offsetInPixels: swapOffset
+		} = swapAnimationState;
+
+		switch (swapType) {
+			case "none":
+			case "stop":
+				nextState.swapTransition = null;
+				break;
+			case "up":
+				nextState.swapTransition = {
+					transform: `translateY(-${swapOffset}px)`,
+					transitionDuration: `${swapDuration}ms`
+				};
+				break;
+			case "down":
+				nextState.swapTransition = {
+					transform: `translateY(${swapOffset}px)`,
+					transitionDuration: `${swapDuration}ms`
+				};
+				break;
+			case "left":
+				nextState.swapTransition = {
+					transform: `translateX(-${swapOffset}px)`,
+					transitionDuration: `${swapDuration}ms`
+				};
+				break;
+			case "right":
+				nextState.swapTransition = {
+					transform: `translateX(${swapOffset}px)`,
+					transitionDuration: `${swapDuration}ms`
+				};
+				break;
+			// no default
+		}
+
+		// Logic for animationState
+		const {
+			type: animType,
+			durationMilliseconds: animDuration,
+			offsetInPixels: animOffset
 		} = animationState;
 
-		switch (type) {
+		switch (animType) {
 			case "none":
-				// setTransition({
-				// 	filter: "brightness(1) drop-shadow(0px 0px 0px currentColor)",
-				// 	transitionDuration: "0ms"
-				// });
-				setTransition(null);
+			case "stop":
+				nextState.transition = currentNextTile === nextState.currentNextTile
+					? transition
+					: null;
 				break;
 			case "falling":
-				setTransition({
-					transform: `translateY(${offsetInPixels}px)`,
-					transitionDuration: `${durationMilliseconds}ms`
-				});
+				nextState.transition = {
+					transform: `translateY(${animOffset}px)`,
+					transitionDuration: `${animDuration}ms`
+				};
 				break;
 			case "matching":
-				setTransition({
+				nextState.transition = {
 					transform: "scale(1.25)",
 					filter: "brightness(1.25) drop-shadow(0px 0px 20px currentColor)",
-					transitionDuration: `${durationMilliseconds}ms`
-				});
+					transitionDuration: `${animDuration}ms`
+				};
 				break;
 			case "matched":
-				setTransition({
+				nextState.transition = {
 					transform: "scale(0)",
 					filter: "brightness(1) drop-shadow(0px 0px 0px currentColor)",
-					transitionDuration: `${durationMilliseconds}ms`
-				});
+					transitionDuration: `${animDuration}ms`
+				};
 				break;
 			// no default
 		}
-	}, [animationState]);
 
-	useEffect(() => {
+		// Logic for refillingAnimationState
 		const {
-			type,
-			durationMilliseconds
+			type: refillType,
+			durationMilliseconds: refillDuration
 		} = refillingAnimationState;
 
-		switch (type) {
+		switch (refillType) {
 			case "none":
-				setRefillingTransition({
-					transitionDuration: "0ms",
-					opacity: 0
-				});
-
-				setTimeout(() => {
-					setRefillingTransition(null);
-				}, 100);
+			case "stop":
+				if (refillingTransition?.opacity === 0) {
+					nextState.refillingTransition = {
+						transform: "translateY(-400%)",
+						transitionDuration: "0ms"
+					};
+				}
+				else if (currentNextTile === nextState.currentNextTile) {
+					nextState.refillingTransition = refillingTransition;
+				}
+				else {
+					nextState.refillingTransition = {
+						transform: "translateY(0%)",
+						transitionDuration: "0ms",
+						opacity: 0
+					};
+				}
 				break;
 			case "falling":
-				setRefillingTransition({
+				nextState.refillingTransition = {
 					transform: "translateY(0%)",
-					transitionDuration: `${durationMilliseconds}ms`,
+					transitionDuration: `${refillDuration}ms`,
 					opacity: 1
-				});
+				};
 				break;
 			// no default
 		}
-	}, [refillingAnimationState]);
+
+		return nextState;
+	};
+
+	useEffect(() => {
+		setDisplayState(computeNextState());
+	}, [
+		animationState,
+		refillingAnimationState,
+		swapAnimationState,
+		color,
+		nextTile,
+		tile
+	]);
 
 	return (
 		<>
 			{
-				nextTile?.piece?.color && (
+				(currentNextTile?.piece?.color) && (
 					<div
 						className={clsx(
-							"absolute w-[60%] h-[60%] will-change-transform flex z-50 -translate-y-[400%] opacity-0",
+							"absolute w-[60%] h-[60%] will-change-transform flex z-50 -translate-y-[400%] opacity-0 transition-[filter,color,transform,opacity]",
+							colorClasses.get(currentNextTile.piece.color),
 							{
-								"transition-transform": refillingTransition
+								"pointer-events-none": refillingTransition
 							}
 						)}
 						style={refillingTransition}
 					>
-						<Piece color={nextTile?.piece?.color} />
+						<Piece color={currentNextTile.piece.color} />
 					</div>
 				)
 			}
 			<animated.div
 				className={clsx(
-					"absolute w-[60%] h-[60%] will-change-transform cursor-grab touch-none select-none flex active:cursor-grabbing brightness-100",
+					"absolute w-[60%] h-[60%] will-change-transform cursor-grab touch-none select-none flex active:cursor-grabbing brightness-100 duration-0",
+					colorClasses.get(currentColor),
 					{
-						"transition-[filter]": !transition,
-						"transition-transform": transition
+						"pointer-events-none transition-[filter,color,transform] duration-0": transition || swapTransition,
+						"transition-[filter,color]": !transition && !swapTransition
 					}
 				)}
 				ref={pieceRef}
 				style={
-					transition ??
-					{
+					swapTransition ?? transition ?? {
 						...style,
 						x: style.x.to((value) => Math.min(Math.abs(value), maxOffset) * Math.sign(value)),
 						y: style.y.to((value) => Math.min(Math.abs(value), maxOffset) * Math.sign(value))
@@ -240,7 +280,7 @@ const PieceDisplay = ({
 				}
 				{...bind()}
 			>
-				<Piece color={color} />
+				<Piece color={currentColor} />
 			</animated.div>
 		</>
 	);

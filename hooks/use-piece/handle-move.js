@@ -1,5 +1,6 @@
 import useBoardId from "@/hooks/use-board-id.js";
 import handleUnavailableMove from "@/hooks/use-piece/handle-unavailble-move.js";
+import { move as moveSignal } from "@/signals.js";
 
 /**
  *
@@ -31,6 +32,8 @@ const handleMove = async (
 			},
 			direction
 		};
+
+		moveSignal.value = payload;
 
 		await fetch(
 			`/api/rooms/${boardId}/move`,

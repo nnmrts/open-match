@@ -9,6 +9,8 @@ import getPosition from "./use-piece/get-position.js";
 import getBind from "./use-piece/get-bind.js";
 import getEventSourceHandler from "./use-piece/get-event-source-handler.js";
 
+import useWindowSize from "@/hooks/use-window-size.js";
+
 /**
  *
  * @param options
@@ -25,6 +27,8 @@ const usePiece = (options) => {
 
 	const [displayedWidth, setDisplayedWidth] = useState(0);
 
+	const { width: windowWidth, height: windowHeight } = useWindowSize();
+
 	const maxOffsetPart = 3;
 
 	const maxOffset = displayedWidth / maxOffsetPart;
@@ -39,7 +43,10 @@ const usePiece = (options) => {
 		maxOffset
 	});
 
-	const eventSourceHandler = getEventSourceHandler(options);
+	const eventSourceHandler = getEventSourceHandler({
+		...options,
+		maxOffset
+	});
 
 	useEffect(() => {
 		const handler = (event) => event.preventDefault();
@@ -60,7 +67,11 @@ const usePiece = (options) => {
 			ref,
 			setDisplayedWidth
 		});
-	}, [ref.current]);
+	}, [
+		ref.current,
+		windowWidth,
+		windowHeight
+	]);
 
 	useEffect(() => {
 		effectPosition({

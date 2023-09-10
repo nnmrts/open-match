@@ -117,10 +117,6 @@ const BoardDisplay = ({
 	}, [board, boardStatesLeft]);
 
 	const handleAnimationEnd = async (callback) => {
-		// await new Promise((resolve) => {
-		// 	setTimeout(resolve, 1000);
-		// });
-
 		if (boardStatesLeft.length > 0) {
 			updateBoard(boardStatesLeft[0], callback);
 		}
@@ -145,7 +141,7 @@ const BoardDisplay = ({
 		<>
 			{
 				(noAvailableMovesMessageShown) && (
-					<div className="absolute z-50 flex flex-col items-center justify-center w-full h-full gap-2 bg-black bg-opacity-75 backdrop-blur-sm">
+					<div className="absolute z-[100] flex flex-col items-center justify-center w-full h-full gap-2 bg-black bg-opacity-75 backdrop-blur-sm">
 						<span className="text-3xl font-bold">No available Moves</span>
 						<span className="text-3xl font-bold">Shuffling...</span>
 					</div>
@@ -156,6 +152,7 @@ const BoardDisplay = ({
 					columns,
 					user,
 					handleAnimationEnd,
+					boardStates,
 					boardStatesLeft
 				}}
 			/>

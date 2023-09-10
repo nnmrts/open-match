@@ -4,8 +4,8 @@ import { kv } from "@/utilities/server.js";
 
 /**
  *
- * @param root0
- * @param root0.headers
+ * @param options
+ * @param options.headers
  * @param context
  */
 const handler = async ({ headers }, context) => {

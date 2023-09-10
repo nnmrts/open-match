@@ -11,12 +11,14 @@ import { directionPositions } from "@/utilities/client.js";
  * @param options.tileIndex
  * @param options.user
  * @param options.api
+ * @param options.maxOffset
  */
 const getEventSourceHandler = ({
 	columnIndex,
 	tileIndex,
 	user,
-	api
+	api,
+	maxOffset
 }) => ({ data: dataJson }) => {
 	const {
 		type,
@@ -71,7 +73,8 @@ const getEventSourceHandler = ({
 						api.start({
 							...getPosition({
 								directionToMoveTo: payloadDirection,
-								positionToMoveTo: directionPositions.get(payloadDirection)
+								positionToMoveTo: directionPositions.get(payloadDirection),
+								maxOffset
 							}),
 							scale: 1.2
 						});
