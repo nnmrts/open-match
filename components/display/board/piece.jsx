@@ -11,7 +11,7 @@ import PurplePiece from "./piece/purple.jsx";
  * @param props.color
  */
 const Piece = ({ color }) => {
-	const className = "transition-[filter] duration-200 hover:brightness-125 hover:drop-shadow-[0px_0px_10px_currentColor] ease-in-out";
+	const className = "transition-[filter] duration-200 drop-shadow-[0px_4px_0px_black] hover:brightness-125 hover:drop-shadow-[0px_0px_10px_currentColor] ease-in-out";
 
 	switch (color) {
 		case "blue":

@@ -15,15 +15,14 @@ const RedPiece = ({ className }) => (
 			colorClasses.get("red"),
 			className
 		)}
-		transform="rotate(180)"
 	>
 		<defs>
-			<polygon id="redShape" points="0,3732 4000,3732 2000,268" />
+			<polygon id="redShape" points="0,268 4000,268 2000,3732" />
 			<clipPath id="redClip">
 				<use href="#redShape" />
 			</clipPath>
 		</defs>
-		<use href="#redShape" fill="currentColor" stroke="black" strokeOpacity={0.25} stroke-width={800} clip-path="url(#redClip)" />
+		<use href="#redShape" fill="currentColor" stroke="black" strokeOpacity={0.35} stroke-width={800} clip-path="url(#redClip)" />
 	</svg>
 );
 

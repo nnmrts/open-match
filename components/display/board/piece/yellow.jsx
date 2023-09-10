@@ -22,7 +22,7 @@ const YellowPiece = ({ className }) => (
 				<use href="#yellowShape" />
 			</clipPath>
 		</defs>
-		<use href="#yellowShape" fill="currentColor" stroke="black" strokeOpacity={0.25} stroke-width={800} clip-path="url(#yellowClip)" />
+		<use href="#yellowShape" fill="currentColor" stroke="black" strokeOpacity={0.35} stroke-width={800} clip-path="url(#yellowClip)" />
 	</svg>
 );
 
