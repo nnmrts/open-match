@@ -106,7 +106,7 @@ const ColumnsDisplay = ({
 
 			<ul
 				className={clsx(
-					"relative grid grid-flow-col gap-2 p-2 h-[min(100%,calc(100vw-var(--main-padding)))] z-10",
+					"relative grid grid-flow-col gap-2 p-2 w-full h-auto sm:w-auto sm:h-[min(100%,calc(100vw-var(--main-padding)))] z-10",
 					{
 						"pointer-events-none": boardStatesLeft.length > 0
 					}
@@ -118,35 +118,40 @@ const ColumnsDisplay = ({
 				}}
 				ref={gridRef}
 			>
-				<ul
-					className="absolute z-0 grid h-full grid-flow-col gap-2 p-2"
-					style={{
-						gridTemplateColumns: `repeat(${width}, 1fr)`,
-						gridTemplateRows: `repeat(${height}, 1fr)`,
-						aspectRatio: `${width}/${height}`
-					}}
+				<li
+					className="absolute z-0 w-full h-full"
 				>
-					{
-						columns
-							.map((column, columnIndex) => column
-								.map(({ parity }, tileIndex) => (
-									<li
-										key={`${columnIndex}-${tileIndex}`}
-										className={clsx(
-											"h-full aspect-square p-[20%] relative w-full",
-											{
-												"backdrop-brightness-75": parity === 0,
-												"backdrop-brightness-50": parity === 1
-											}
-										)}
-									>
-										<div
-											className="w-[60%] h-[60%]"
-										></div>
-									</li>
-								)))
-					}
-				</ul>
+					<ul
+						className="absolute z-0 grid h-full grid-flow-col gap-2 p-2"
+						style={{
+							gridTemplateColumns: `repeat(${width}, 1fr)`,
+							gridTemplateRows: `repeat(${height}, 1fr)`,
+							aspectRatio: `${width}/${height}`
+						}}
+					>
+						{
+							columns
+								.map((column, columnIndex) => column
+									.map(({ parity }, tileIndex) => (
+										<li
+											key={`${columnIndex}-${tileIndex}`}
+											className={clsx(
+												"h-full aspect-square p-[20%] relative w-full",
+												{
+													"backdrop-brightness-75": parity === 0,
+													"backdrop-brightness-50": parity === 1
+												}
+											)}
+										>
+											<div
+												className="w-[60%] h-[60%]"
+											></div>
+										</li>
+									)))
+						}
+					</ul>
+				</li>
+
 				{
 					columns
 						.map((column, columnIndex) => (
