@@ -56,7 +56,7 @@ const ColumnsDisplay = ({
 				const heightValue = gridRef.current.getBoundingClientRect().height;
 				const heightUnit = "pixel";
 
-				const gapString = getComputedStyle(gridRef.current).gap;
+				const gapString = getComputedStyle(gridRef.current).gap.split(" ")[0];
 				const gapUnit = getCssUnit(gapString);
 				const gapUnitString = cssUnitUnitStrings.get(gapUnit);
 				const gapValue = Number(
@@ -66,7 +66,7 @@ const ColumnsDisplay = ({
 					)
 				);
 
-				const tileHeightString = getComputedStyle(gridRef.current.querySelector("li")).height;
+				const tileHeightString = getComputedStyle(gridRef.current.querySelector("li")).height.split(" ")[0];
 				const tileHeightUnit = getCssUnit(tileHeightString);
 				const tileHeightUnitString = cssUnitUnitStrings.get(tileHeightUnit);
 				const tileHeightValue = Number(
@@ -91,7 +91,8 @@ const ColumnsDisplay = ({
 					}
 				});
 			}
-			catch {
+			catch (error) {
+				console.log(error);
 				// Do nothing
 			}
 		}
